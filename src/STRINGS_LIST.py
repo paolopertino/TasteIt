@@ -12,3 +12,10 @@ GENERAL_STRINGS = {
 }
 
 ERROR_STRINGS = {}
+
+
+def getString(stringName, language, *args):
+    if stringName.startswith("GENERAL"):
+        return GENERAL_STRINGS.get(stringName).get(language).format(*args)
+    else:
+        return ERROR_STRINGS.get(stringName).get(language).format(*args)
