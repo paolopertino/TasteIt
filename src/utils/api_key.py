@@ -21,35 +21,30 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
-from telegram.ext import (
-    PicklePersistence,
-    Updater,
-    CommandHandler,
-    ConversationHandler,
-    CallbackQueryHandler,
-    MessageHandler,
-    Filters,
-)
+from dotenv import dotenv_values
+from os import getenv
 
-import logging
-
-from utils import ApiKey
-
-_DEVMODE = False
+# Magari implementarlo con classe enumerazione.
+__AVAILABLE_SERVICES = ["TELEGRAM", "GOOGLE_PLACES"]
 
 
-def main():
-    logging.basicConfig(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=logging.INFO,
-    )
+class ApiKey:
+    """
+    A class to rappresent an API key.
 
-    falseDev = ApiKey("GOOGLE")
-    trueDev = ApiKey("FACEBOOK", True)
+    Attributes
+    ----------
+    value : str
+        the key value
 
-    # updater = Updater(getToken(_DEVMODE), persistence=persistent_bot, use_context=True)
-    # dispatcher = updater.dispatcher
+    Methods
+    -------
+    __init__(service: str, devMode: bool = False):
+        Set the value of the API key of the given service.
+        If devMode is specified and its True, the value is
+        set with the DEV version of the key of the specified
+        service.
+    """
 
-
-if __name__ == "__main__":
-    main()
+    def __init__(self, service: str, devMode: bool = False) -> None:
+        print("Costruttore")
