@@ -23,28 +23,72 @@
 
 from dotenv import dotenv_values
 from os import getenv
+from sys import path
+from enum import Enum, auto, unique
 
-# Magari implementarlo con classe enumerazione.
-__AVAILABLE_SERVICES = ["TELEGRAM", "GOOGLE_PLACES"]
+path.append("..")
+
+from custom_exceptions import NoServiceFoundException
+from STRINGS_LIST import getString
+
+
+@unique
+class Service(Enum):
+    """Defines all the available services which have an API key set in the .env file or in the os environment.
+
+    Usage:
+        * Add the name of the service you want to implement in this class.
+        * Add an ENV variable to your environment or .env file with the following convention:
+                * if the key you want insert is for dev use: DEV_`<SERVICE_NAME>`_KEY = `KEY_VALUE`
+                * otherwise if it's for public usage: `<SERVICE_NAME>`_KEY = `KEY_VALUE`.
+    """
+
+    TELEGRAM = auto()
+    GOOGLE_PLACES = auto()
 
 
 class ApiKey:
     """
-    A class to rappresent an API key.
+    A class used to represent an API key.
 
     Attributes
     ----------
-    value : str
-        the key value
+    service : Service
+        the API key service
 
     Methods
     -------
-    __init__(service: str, devMode: bool = False):
-        Set the value of the API key of the given service.
-        If devMode is specified and its True, the value is
-        set with the DEV version of the key of the specified
-        service.
+    @property
+    `value() -> str`
+        Returns the API key of the key service if it is available.\\
+        Throws a NoServiceFoundException if the service given is not available.
     """
 
-    def __init__(self, service: str, devMode: bool = False) -> None:
-        print("Costruttore")
+    def __init__(self, service: Service, devMode: bool = False) -> None:
+        self.service = service
+        self.isDeveloperKey = devMode
+
+    @property
+    def value(self):
+        """The key value
+
+        Raises:
+            NoServiceFoundException: raised when the service given is not part of the available services.
+
+        Returns:
+            str: the value of the current key
+        """
+        if self.service in list(Service):
+            if self.isDeveloperKey:
+                keyToSearch = "DEV_" + self.service.name + "_KEY"
+            else:
+                keyToSearch = self.service.name + "_KEY"
+
+            if getenv(keyToSearch) != None:
+                return getenv(keyToSearch)
+            else:
+                return dotenv_values(".env").get(keyToSearch)
+        else:
+            raise NoServiceFoundException(
+                self.service, getString("ERROR_NoServiceFound", "en")
+            )

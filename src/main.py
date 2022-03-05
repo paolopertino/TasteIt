@@ -33,9 +33,9 @@ from telegram.ext import (
 
 import logging
 
-from utils import ApiKey
+from utils import ApiKey, Service
 
-_DEVMODE = False
+_DEVMODE = True
 
 
 def main():
@@ -44,11 +44,15 @@ def main():
         level=logging.INFO,
     )
 
-    falseDev = ApiKey("GOOGLE")
-    trueDev = ApiKey("FACEBOOK", True)
+    telegramKey = ApiKey(service=Service.TELEGRAM, devMode=_DEVMODE).value
+    updater = Updater(telegramKey, use_context=True)
+    dispatcher = updater.dispatcher
 
-    # updater = Updater(getToken(_DEVMODE), persistence=persistent_bot, use_context=True)
-    # dispatcher = updater.dispatcher
+    # Stuff to be done
+    # TODO: Inizializzare lo start command
+
+    updater.start_polling()
+    updater.idle()
 
 
 if __name__ == "__main__":
