@@ -21,41 +21,25 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
-from telegram.ext import (
-    PicklePersistence,
-    Updater,
-    CommandHandler,
-    ConversationHandler,
-    CallbackQueryHandler,
-    MessageHandler,
-    Filters,
-)
+from telegram import ParseMode, Update
+from telegram.ext import CallbackContext
+from sys import path
 
-import logging
+path.append("..")
 
-from utils import ApiKey, Service
-from bot_functionalities import start
-
-_DEVMODE = True
+from STRINGS_LIST import getString
 
 
-def main():
-    logging.basicConfig(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=logging.INFO,
+def start(update: Update, context: CallbackContext):
+    """Function triggered with the /start command
+
+    Args:
+        update (Update)\\
+        context (CallbackContext)
+    """
+    # TODO: setup db for language
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=getString("GENERAL_WelcomeString", "it"),
+        parse_mode=ParseMode.MARKDOWN_V2,
     )
-
-    telegramKey = ApiKey(service=Service.TELEGRAM, devMode=_DEVMODE).value
-    updater = Updater(telegramKey, use_context=True)
-    dispatcher = updater.dispatcher
-
-    # Stuff to be done
-    # TODO: Inizializzare lo start command
-    dispatcher.add_handler(CommandHandler("start", start))
-
-    updater.start_polling()
-    updater.idle()
-
-
-if __name__ == "__main__":
-    main()
