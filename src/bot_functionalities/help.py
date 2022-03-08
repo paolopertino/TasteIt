@@ -21,69 +21,27 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
-from telegram.ext import (
-    PicklePersistence,
-    Updater,
-    CommandHandler,
-    ConversationHandler,
-    CallbackQueryHandler,
-    MessageHandler,
-    Filters,
-    Defaults,
-)
+from telegram import Update
+from telegram.ext import CallbackContext
+from sys import path
 
-from telegram import ParseMode
+from STRINGS_LIST import getString
+from utils import verifyChatData
+from data import fetchLang
 
-import logging
-
-from utils import ApiKey, Service
-from bot_functionalities import start, help, setLanguage, changeLanguage, SELECT_LANG
-from data import setupTables
-
-_DEVMODE = True
+path.append("..")
 
 
-def main():
-    logging.basicConfig(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=logging.INFO,
+def help(update: Update, context: CallbackContext):
+    """Function triggered with the `/help` command
+
+    Args:
+        update (Update)\\
+        context (CallbackContext)
+    """
+    verifyChatData(update=update, context=context)
+
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=getString("GENERAL_HelpString", context.chat_data.get("lang")),
     )
-
-    telegramKey = ApiKey(service=Service.TELEGRAM, devMode=_DEVMODE).value
-
-    defaults = Defaults(parse_mode=ParseMode.MARKDOWN_V2)
-    updater = Updater(telegramKey, use_context=True, defaults=defaults)
-    dispatcher = updater.dispatcher
-
-    # Command Handlers
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help))
-
-    # Conversation Handlers
-    # TODO: study fallbacks
-    dispatcher.add_handler(
-        ConversationHandler(
-            entry_points=[CommandHandler("lang", setLanguage)],
-            states={
-                SELECT_LANG: [
-                    CallbackQueryHandler(changeLanguage, pattern="^" + "it" + "$"),
-                    CallbackQueryHandler(changeLanguage, pattern="^" + "en" + "$"),
-                ],
-            },
-            # Fare funzione che termina la conversazione.
-            fallbacks=[
-                CommandHandler("start", start),
-                CommandHandler("lang", setLanguage),
-            ],
-        )
-    )
-
-    # Setting up database
-    setupTables()
-
-    updater.start_polling()
-    updater.idle()
-
-
-if __name__ == "__main__":
-    main()

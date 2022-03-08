@@ -21,69 +21,59 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
-from telegram.ext import (
-    PicklePersistence,
-    Updater,
-    CommandHandler,
-    ConversationHandler,
-    CallbackQueryHandler,
-    MessageHandler,
-    Filters,
-    Defaults,
-)
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import CallbackContext, ConversationHandler
+from sys import path
 
-from telegram import ParseMode
+path.append("..")
 
-import logging
+from STRINGS_LIST import getString
+from utils import verifyChatData
+from data import updateLang
 
-from utils import ApiKey, Service
-from bot_functionalities import start, help, setLanguage, changeLanguage, SELECT_LANG
-from data import setupTables
-
-_DEVMODE = True
+SELECT_LANG = range(1)
 
 
-def main():
-    logging.basicConfig(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=logging.INFO,
+def setLanguage(update: Update, context: CallbackContext):
+    """Send message on `/lang`."""
+    verifyChatData(update=update, context=context)
+
+    keyboard = [
+        [
+            InlineKeyboardButton("🇮🇹", callback_data="it"),
+            InlineKeyboardButton("🇺🇸", callback_data="en"),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    # Send message with text and appended InlineKeyboard
+    update.message.reply_text(
+        getString("GENERAL_ChooseLanguageString", context.chat_data.get("lang")),
+        reply_markup=reply_markup,
     )
+    # Tell ConversationHandler that we're in state `SELECT_LANG` now
+    return SELECT_LANG
 
-    telegramKey = ApiKey(service=Service.TELEGRAM, devMode=_DEVMODE).value
 
-    defaults = Defaults(parse_mode=ParseMode.MARKDOWN_V2)
-    updater = Updater(telegramKey, use_context=True, defaults=defaults)
-    dispatcher = updater.dispatcher
+def changeLanguage(update: Update, context: CallbackContext) -> int:
+    """Change the `chat_data["lang"]` value to the one selected by the user, and it updates the database.
 
-    # Command Handlers
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help))
+    Args:
+        update (Update)
+        context (CallbackContext)
 
-    # Conversation Handlers
-    # TODO: study fallbacks
-    dispatcher.add_handler(
-        ConversationHandler(
-            entry_points=[CommandHandler("lang", setLanguage)],
-            states={
-                SELECT_LANG: [
-                    CallbackQueryHandler(changeLanguage, pattern="^" + "it" + "$"),
-                    CallbackQueryHandler(changeLanguage, pattern="^" + "en" + "$"),
-                ],
-            },
-            # Fare funzione che termina la conversazione.
-            fallbacks=[
-                CommandHandler("start", start),
-                CommandHandler("lang", setLanguage),
-            ],
-        )
+    Returns:
+        ConversationHandler.END: signal which ends the conversation.
+    """
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    newLanguage = update.callback_query.data
+    updateLang(chatId=update.effective_chat.id, newLang=newLanguage)
+    context.chat_data.update({"lang": newLanguage})
+
+    query.edit_message_text(
+        text=getString("GENERAL_LanguageUpdated", context.chat_data.get("lang"))
     )
-
-    # Setting up database
-    setupTables()
-
-    updater.start_polling()
-    updater.idle()
-
-
-if __name__ == "__main__":
-    main()
+    return ConversationHandler.END

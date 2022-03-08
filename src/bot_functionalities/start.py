@@ -21,25 +21,27 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
-from telegram import ParseMode, Update
+from telegram import Update
 from telegram.ext import CallbackContext
 from sys import path
 
 path.append("..")
 
 from STRINGS_LIST import getString
+from utils import verifyChatData
 
 
 def start(update: Update, context: CallbackContext):
-    """Function triggered with the /start command
+    """Function triggered with the `/start` command
 
     Args:
         update (Update)\\
         context (CallbackContext)
     """
-    # TODO: setup db for language
+
+    verifyChatData(update=update, context=context)
+
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=getString("GENERAL_WelcomeString", "it"),
-        parse_mode=ParseMode.MARKDOWN_V2,
+        text=getString("GENERAL_WelcomeString", context.chat_data.get("lang")),
     )

@@ -26,10 +26,34 @@
 GENERAL_STRINGS = {
     "GENERAL_WelcomeString": {
         "it": """
-                 Ciao\, sono TasteIT\, ti aiuterò nella ricerca del locale perfetto in cui mangiare\.\n\nDigita il comando /help per avere una completa panoramica delle funzionalità offerte\.
+                 Ciao\, sono _*TasteIT*_ 🍣🍝\, ti aiuterò nella ricerca del locale perfetto in cui mangiare😋\.\n\nDigita il comando /help per avere una completa panoramica delle funzionalità offerte\.
               """,
         "en": """
-                 Hi\, I am TasteIT\, and I will help you to search for the perfect restaurant to have a meal\.\n\nTry the /help command for having a complete overview of my functionalities\.
+                 Hi\, I am _*TasteIT*_ 🍣🍝\, and I will help you to search for the perfect restaurant to have a meal😋\.\n\nTry the /help command for having a complete overview of my functionalities\.
+              """,
+    },
+    "GENERAL_HelpString": {
+        "it": """
+                 🔧 Comandi generali 🔧\n/start \~ Avvia il bot\.\n/help \~ Visualizza la lista dei comandi disponibili\.\n/lang \~ Imposta la lingua del bot\.\n\n Comandi Viaggi
+              """,
+        "en": """
+                 🔧 General commands 🔧\n/start \~ Starts the bot\.\n/help \~ Shows all available commands\.\n/lang \~ Change the bot language\.\n\n Train commands
+              """,
+    },
+    "GENERAL_ChooseLanguageString": {
+        "it": """
+                 Imposta la lingua del bot\:
+              """,
+        "en": """
+                 Set the bot language\:
+              """,
+    },
+    "GENERAL_LanguageUpdated": {
+        "it": """
+                 La tua lingua è stata aggiornata 🇮🇹
+              """,
+        "en": """
+                 Your language has been updated 🇺🇸
               """,
     },
 }

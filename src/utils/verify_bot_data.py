@@ -21,69 +21,28 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
-from telegram.ext import (
-    PicklePersistence,
-    Updater,
-    CommandHandler,
-    ConversationHandler,
-    CallbackQueryHandler,
-    MessageHandler,
-    Filters,
-    Defaults,
-)
+from telegram import Update
+from telegram.ext import CallbackContext
 
-from telegram import ParseMode
-
-import logging
-
-from utils import ApiKey, Service
-from bot_functionalities import start, help, setLanguage, changeLanguage, SELECT_LANG
-from data import setupTables
-
-_DEVMODE = True
+from data import fetchLang, insertChat
 
 
-def main():
-    logging.basicConfig(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=logging.INFO,
-    )
+def verifyChatData(update: Update, context: CallbackContext) -> None:
+    """Verify that all needed chat_data are correctly set, otherwise it fetches them from the database.\\
+    Currently the followings datas need to be stored in chat_data to make the bot work properly:
+        * `lang` - language code for the current chat
 
-    telegramKey = ApiKey(service=Service.TELEGRAM, devMode=_DEVMODE).value
+    Args:
+        update (Update): _description_
+        context (CallbackContext): _description_
+    """
+    if context.chat_data.get("lang") == None:
+        chatLanguage = fetchLang(update.effective_chat.id)
 
-    defaults = Defaults(parse_mode=ParseMode.MARKDOWN_V2)
-    updater = Updater(telegramKey, use_context=True, defaults=defaults)
-    dispatcher = updater.dispatcher
+        if chatLanguage:
+            context.chat_data.update({"lang": chatLanguage[0]})
+        else:
+            insertChat(update.effective_chat.id, update.effective_user.language_code)
+            context.chat_data.update({"lang": update.effective_user.language_code})
 
-    # Command Handlers
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help))
-
-    # Conversation Handlers
-    # TODO: study fallbacks
-    dispatcher.add_handler(
-        ConversationHandler(
-            entry_points=[CommandHandler("lang", setLanguage)],
-            states={
-                SELECT_LANG: [
-                    CallbackQueryHandler(changeLanguage, pattern="^" + "it" + "$"),
-                    CallbackQueryHandler(changeLanguage, pattern="^" + "en" + "$"),
-                ],
-            },
-            # Fare funzione che termina la conversazione.
-            fallbacks=[
-                CommandHandler("start", start),
-                CommandHandler("lang", setLanguage),
-            ],
-        )
-    )
-
-    # Setting up database
-    setupTables()
-
-    updater.start_polling()
-    updater.idle()
-
-
-if __name__ == "__main__":
-    main()
+    # If other data needs to be refreshed or checked it will be set below.

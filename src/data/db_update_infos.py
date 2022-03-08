@@ -21,69 +21,20 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
-from telegram.ext import (
-    PicklePersistence,
-    Updater,
-    CommandHandler,
-    ConversationHandler,
-    CallbackQueryHandler,
-    MessageHandler,
-    Filters,
-    Defaults,
-)
-
-from telegram import ParseMode
-
-import logging
-
-from utils import ApiKey, Service
-from bot_functionalities import start, help, setLanguage, changeLanguage, SELECT_LANG
-from data import setupTables
-
-_DEVMODE = True
+from data import dbConnect
 
 
-def main():
-    logging.basicConfig(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=logging.INFO,
+def updateLang(chatId: str, newLang: str) -> None:
+    connection = dbConnect()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        UPDATE chat 
+        SET lang = ? 
+        WHERE chat_id = ?
+    """,
+        (newLang, chatId),
     )
 
-    telegramKey = ApiKey(service=Service.TELEGRAM, devMode=_DEVMODE).value
-
-    defaults = Defaults(parse_mode=ParseMode.MARKDOWN_V2)
-    updater = Updater(telegramKey, use_context=True, defaults=defaults)
-    dispatcher = updater.dispatcher
-
-    # Command Handlers
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help))
-
-    # Conversation Handlers
-    # TODO: study fallbacks
-    dispatcher.add_handler(
-        ConversationHandler(
-            entry_points=[CommandHandler("lang", setLanguage)],
-            states={
-                SELECT_LANG: [
-                    CallbackQueryHandler(changeLanguage, pattern="^" + "it" + "$"),
-                    CallbackQueryHandler(changeLanguage, pattern="^" + "en" + "$"),
-                ],
-            },
-            # Fare funzione che termina la conversazione.
-            fallbacks=[
-                CommandHandler("start", start),
-                CommandHandler("lang", setLanguage),
-            ],
-        )
-    )
-
-    # Setting up database
-    setupTables()
-
-    updater.start_polling()
-    updater.idle()
-
-
-if __name__ == "__main__":
-    main()
+    connection.commit()
+    connection.close()

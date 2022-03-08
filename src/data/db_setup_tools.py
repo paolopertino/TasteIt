@@ -21,69 +21,50 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
-from telegram.ext import (
-    PicklePersistence,
-    Updater,
-    CommandHandler,
-    ConversationHandler,
-    CallbackQueryHandler,
-    MessageHandler,
-    Filters,
-    Defaults,
-)
+from sqlite3 import Connection
 
-from telegram import ParseMode
-
-import logging
-
-from utils import ApiKey, Service
-from bot_functionalities import start, help, setLanguage, changeLanguage, SELECT_LANG
-from data import setupTables
-
-_DEVMODE = True
+from data import dbConnect
 
 
-def main():
-    logging.basicConfig(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=logging.INFO,
+def setupTables() -> None:
+    """
+    Create the database's tables if they haven't been created yet.
+    The DB is composed by 4 tables: `chat`, `list`, `restaurant`, `restaurant_for_list`.
+    """
+    connection = dbConnect()
+    cursor = connection.cursor()
+    cursor.execute(
+        """CREATE TABLE IF NOT EXISTS chat (
+            chat_id TEXT PRIMARY KEY,
+            lang TEXT NOT NULL)
+        """
+    )
+    cursor.execute(
+        """CREATE TABLE IF NOT EXISTS list (
+            list_id TEXT PRIMARY KEY,
+            chat_id TEXT NOT NULL, 
+            category TEXT NOT NULL,
+            FOREIGN KEY (chat_id) REFERENCES chat (chat_id) ON DELETE NO ACTION ON UPDATE CASCADE)
+        """
+    )
+    cursor.execute(
+        """CREATE TABLE IF NOT EXISTS restaurant (
+            restaurant_id TEXT PRIMARY KEY, 
+            name TEXT NOT NULL, 
+            address TEXT NOT NULL, 
+            rating REAL, 
+            price_lvl REAL, 
+            timetable TEXT)
+        """
+    )
+    cursor.execute(
+        """CREATE TABLE IF NOT EXISTS restaurant_for_list (
+            list_id TEXT, 
+            restaurant_id TEXT, 
+            PRIMARY KEY(list_id, restaurant_id),
+            FOREIGN KEY (list_id) REFERENCES list (list_id) ON DELETE CASCADE ON UPDATE CASCADE,
+            FOREIGN KEY (restaurant_id) REFERENCES restaurant (restaurant_id) ON DELETE CASCADE ON UPDATE CASCADE)"""
     )
 
-    telegramKey = ApiKey(service=Service.TELEGRAM, devMode=_DEVMODE).value
-
-    defaults = Defaults(parse_mode=ParseMode.MARKDOWN_V2)
-    updater = Updater(telegramKey, use_context=True, defaults=defaults)
-    dispatcher = updater.dispatcher
-
-    # Command Handlers
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help))
-
-    # Conversation Handlers
-    # TODO: study fallbacks
-    dispatcher.add_handler(
-        ConversationHandler(
-            entry_points=[CommandHandler("lang", setLanguage)],
-            states={
-                SELECT_LANG: [
-                    CallbackQueryHandler(changeLanguage, pattern="^" + "it" + "$"),
-                    CallbackQueryHandler(changeLanguage, pattern="^" + "en" + "$"),
-                ],
-            },
-            # Fare funzione che termina la conversazione.
-            fallbacks=[
-                CommandHandler("start", start),
-                CommandHandler("lang", setLanguage),
-            ],
-        )
-    )
-
-    # Setting up database
-    setupTables()
-
-    updater.start_polling()
-    updater.idle()
-
-
-if __name__ == "__main__":
-    main()
+    connection.commit()
+    connection.close()
