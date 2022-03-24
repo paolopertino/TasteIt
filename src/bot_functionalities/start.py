@@ -28,7 +28,7 @@ from sys import path
 path.append("..")
 
 from STRINGS_LIST import getString
-from utils import verifyChatData
+from tools.verify_bot_data import verifyChatData
 
 
 def start(update: Update, context: CallbackContext):

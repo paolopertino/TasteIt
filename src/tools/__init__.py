@@ -1,0 +1,1 @@
+from tools.verify_bot_data import verifyChatData

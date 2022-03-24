@@ -35,12 +35,34 @@ from telegram.ext import (
 from telegram import ParseMode
 
 import logging
+from bot_functionalities.search_restaurant import SELECT_FOOD
 
-from utils import ApiKey, Service
-from bot_functionalities import start, help, setLanguage, changeLanguage, SELECT_LANG
+from utils.api_key import ApiKey, Service
+from utils.conversation_utils import notAvailableOption, cancelConversation
+from bot_functionalities import (
+    start,
+    help,
+    setLanguage,
+    changeLanguage,
+    startSearch,
+    searchLocationByName,
+    searchLocationByPosition,
+    selectFood,
+    endSearchConversation,
+    SELECT_LANG,
+    SELECT_STARTING_POSITION,
+    SELECT_FOOD,
+)
 from data import setupTables
 
 _DEVMODE = True
+
+# USEFUL GUIDELINES FOR ConversationHandlers
+# What do the per_* settings in ConversationHandler do?
+# ConversationHandler needs to decide somehow to which conversation an update belongs.
+# The default setting (per_user=True and per_chat=True) means that in each chat each user can have its own conversation - even in groups.
+# If you set per_user=False and you start a conversation in a group chat, the ConversationHandler will also accept input from other users.
+# Conversely, if per_user=True, but per_chat=False, its possible to start a conversation in one chat and continue with it in another.
 
 
 def main():
@@ -55,28 +77,64 @@ def main():
     updater = Updater(telegramKey, use_context=True, defaults=defaults)
     dispatcher = updater.dispatcher
 
-    # Command Handlers
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help))
-
-    # Conversation Handlers
-    # TODO: study fallbacks
+    #################################### Conversation Handlers ####################################
+    # Language feature
     dispatcher.add_handler(
         ConversationHandler(
             entry_points=[CommandHandler("lang", setLanguage)],
+            allow_reentry=False,
+            per_user=True,
+            per_chat=True,
             states={
                 SELECT_LANG: [
                     CallbackQueryHandler(changeLanguage, pattern="^" + "it" + "$"),
                     CallbackQueryHandler(changeLanguage, pattern="^" + "en" + "$"),
+                    CallbackQueryHandler(cancelConversation, pattern="^" + "end" + "$"),
                 ],
             },
-            # Fare funzione che termina la conversazione.
             fallbacks=[
-                CommandHandler("start", start),
-                CommandHandler("lang", setLanguage),
+                MessageHandler(Filters.text | Filters.command, notAvailableOption),
             ],
-        )
+        ),
+        group=1,
     )
+
+    # Search place feature
+    # If the conversation is inactive for more than 5 minutes, it will be automaticallt ended.
+    dispatcher.add_handler(
+        ConversationHandler(
+            entry_points=[CommandHandler("cerca", startSearch)],
+            allow_reentry=False,
+            conversation_timeout=300,
+            states={
+                SELECT_STARTING_POSITION: [
+                    MessageHandler(
+                        (Filters.text & ~Filters.location & ~Filters.command),
+                        searchLocationByName,
+                    ),
+                    MessageHandler(
+                        (~Filters.text & Filters.location & ~Filters.command),
+                        searchLocationByPosition,
+                    ),
+                ],
+                SELECT_FOOD: [
+                    MessageHandler(
+                        (Filters.text & ~Filters.location & ~Filters.command),
+                        selectFood,
+                    ),
+                ],
+            },
+            fallbacks=[
+                CommandHandler("annulla", endSearchConversation),
+                MessageHandler(Filters.command, notAvailableOption),
+            ],
+        ),
+        group=1,
+    )
+
+    # Command Handlers
+    dispatcher.add_handler(CommandHandler("start", start), group=1)
+    dispatcher.add_handler(CommandHandler("help", help), group=1)
 
     # Setting up database
     setupTables()

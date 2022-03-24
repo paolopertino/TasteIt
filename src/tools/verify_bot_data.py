@@ -21,39 +21,31 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
-# Utils exception
+from telegram import Update
+from telegram.ext import CallbackContext
+
+from data import fetchLang, insertChat
 
 
-class NoServiceFoundException(Exception):
-    """Raised when the service given does not match any available service."""
+def verifyChatData(update: Update, context: CallbackContext) -> None:
+    """Verify that all needed chat_data are correctly set, otherwise it fetches them from the database.\\
+    Currently the followings datas need to be stored in chat_data to make the bot work properly:
+        * `lang` - language code for the current chat
 
-    def __init__(self, serviceName, message):
-        self.serviceName = serviceName
-        self.message = message
-        super().__init__(self.message)
+    Args:
+        update (Update): _description_
+        context (CallbackContext): _description_
+    """
+    if context.chat_data.get("lang") == None:
+        chatLanguage = fetchLang(update.effective_chat.id)
 
-    def __str__(self):
-        return f"{self.serviceName} -> {self.message}"
+        if chatLanguage:
+            context.chat_data.update({"lang": chatLanguage[0]})
+        else:
+            insertChat(
+                chatId=update.effective_chat.id,
+                language=update.effective_user.language_code,
+            )
+            context.chat_data.update({"lang": update.effective_user.language_code})
 
-
-class NoPlaceFoundException(Exception):
-    """Raised when the place name given does not produce any result."""
-
-    def __init__(self, placeName, message):
-        self.placeName = placeName
-        self.message = message
-        super().__init__(self.message)
-
-    def __str__(self):
-        return f"{self.placeName} -> {self.message}"
-
-
-class GoogleCriticalErrorException(Exception):
-    """Raised when the google search is invalid due to internal problems."""
-
-    def __init__(self, message):
-        self.message = message
-        super().__init__(self.message)
-
-    def __str__(self):
-        return f"{self.message}"
+    # If other data needs to be refreshed or checked it will be set below.

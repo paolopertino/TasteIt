@@ -26,7 +26,7 @@ from telegram.ext import CallbackContext
 from sys import path
 
 from STRINGS_LIST import getString
-from utils import verifyChatData
+from tools.verify_bot_data import verifyChatData
 from data import fetchLang
 
 path.append("..")

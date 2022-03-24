@@ -25,6 +25,12 @@ from data import dbConnect
 
 
 def insertChat(chatId: str, language: str):
+    """Given a chatId and its preferred language, the method stores them in the Database.
+
+    Args:
+        chatId (str): the chat_id to store in the database
+        language (str): the default language provided
+    """
     connection = dbConnect()
     cursor = connection.cursor()
     cursor.execute("INSERT INTO chat VALUES(?, ?)", (chatId, language))

@@ -28,7 +28,7 @@ from sys import path
 path.append("..")
 
 from STRINGS_LIST import getString
-from utils import verifyChatData
+from tools.verify_bot_data import verifyChatData
 from data import updateLang
 
 SELECT_LANG = range(1)
@@ -42,7 +42,10 @@ def setLanguage(update: Update, context: CallbackContext):
         [
             InlineKeyboardButton("🇮🇹", callback_data="it"),
             InlineKeyboardButton("🇺🇸", callback_data="en"),
-        ]
+        ],
+        [
+            InlineKeyboardButton("❌", callback_data="end"),
+        ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     # Send message with text and appended InlineKeyboard

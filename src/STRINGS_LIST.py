@@ -34,10 +34,10 @@ GENERAL_STRINGS = {
     },
     "GENERAL_HelpString": {
         "it": """
-                 🔧 Comandi generali 🔧\n/start \~ Avvia il bot\.\n/help \~ Visualizza la lista dei comandi disponibili\.\n/lang \~ Imposta la lingua del bot\.\n\n Comandi Viaggi
+                 🔧 Comandi generali 🔧\n/start \~ Avvia il bot\.\n/help \~ Visualizza la lista dei comandi disponibili\.\n/lang \~ Imposta la lingua del bot\.\n\n🍽 Comandi Ricerca Ristoranti 🍽\n/cerca \~ Inizia la ricerca di un ristorante\.\n
               """,
         "en": """
-                 🔧 General commands 🔧\n/start \~ Starts the bot\.\n/help \~ Shows all available commands\.\n/lang \~ Change the bot language\.\n\n Train commands
+                 🔧 General commands 🔧\n/start \~ Starts the bot\.\n/help \~ Shows all available commands\.\n/lang \~ Change the bot language\.\n\n🍽 Restaurant Search Commands 🍽\n/cerca \~ Starts a restaurant search\.\n
               """,
     },
     "GENERAL_ChooseLanguageString": {
@@ -56,6 +56,38 @@ GENERAL_STRINGS = {
                  Your language has been updated 🇺🇸
               """,
     },
+    "GENERAL_OperationCanceled": {
+        "it": """
+                 L'operazione è stata annullata\.
+              """,
+        "en": """
+                 The operation has been cancelled\.
+              """,
+    },
+    "GENERAL_SendRequiredPositionInfos": {
+        "it": """
+                 Per iniziare la ricerca dei ristoranti inviami la tua posizione attuale\, oppure indicami il nome di una località di tuo interesse\.
+              """,
+        "en": """
+                 In order to start the restaurant search send me your current position or indicate a name of a place of interest\. 
+              """,
+    },
+    "GENERAL_SearchRestaurantStartingLocation": {
+        "it": """
+                 Perfetto ✅, inizierò la mia ricerca a partire da *{}*\.\nCosa vuoi mangiare?
+              """,
+        "en": """
+                 Awesome ✅, I'll start the research from *{}*\.\nWhat would you like to eat?
+              """,
+    },
+    "GENERAL_SearchRestaurantCurrentPositionAccepted": {
+        "it": """
+                 Perfetto ✅, inizierò la mia ricerca a partire dalla tua *posizione attuale*\.\nCosa vuoi mangiare?
+              """,
+        "en": """
+                 Awesome ✅, I'll start the research from your *current position*\.\nWhat would you like to eat?
+              """,
+    },
 }
 
 ERROR_STRINGS = {
@@ -65,6 +97,38 @@ ERROR_STRINGS = {
               """,
         "en": """
                  The service requested is not available.
+              """,
+    },
+    "ERROR_ChoseAnAvailableOption": {
+        "it": """
+                 Per favore\, scegli una delle opzioni disponibili prima di continuare\.
+              """,
+        "en": """
+                 Please\, chose an available option from the above ones before continuing\.
+              """,
+    },
+    "ERROR_GoogleCriticalError": {
+        "it": """
+                 Errore critico\. Contatta lo sviluppatore \(\@paolino\_x\)\, notificando GOOGLE\_ERROR\.
+              """,
+        "en": """
+                 A critical error has occured\. Please contact the developer \(\@paolino\_x\)\, notifing GOOGLE\_ERROR\.
+              """,
+    },
+    "ERROR_NoPlacesFound": {
+        "it": """
+                 Nessun posto trovato\. Riprova inviandomi un nuovo nome di località o la tua posizione attuale\.
+              """,
+        "en": """
+                 No places found\. Please\, send me back another location name or your current position\.
+              """,
+    },
+    "ERROR_InvalidPosition": {
+        "it": """
+                 Posizione invalida\, inviami nuovamente la tua posizione o il nome di una località di interesse\.
+              """,
+        "en": """
+                 Invalid position\. Please\, send me back again a location name of your interest or your current position\.
               """,
     },
 }

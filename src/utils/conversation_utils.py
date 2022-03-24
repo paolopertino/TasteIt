@@ -22,27 +22,46 @@
 ####################################################################################
 
 from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import CallbackContext, ConversationHandler
 
-from data import fetchLang, insertChat
+from STRINGS_LIST import getString
+
+from tools.verify_bot_data import verifyChatData
+from bot_functionalities import SELECT_LANG
 
 
-def verifyChatData(update: Update, context: CallbackContext) -> None:
-    """Verify that all needed chat_data are correctly set, otherwise it fetches them from the database.\\
-    Currently the followings datas need to be stored in chat_data to make the bot work properly:
-        * `lang` - language code for the current chat
+def notAvailableOption(update: Update, context: CallbackContext) -> int:
+    verifyChatData(update=update, context=context)
+
+    update.message.reply_text(
+        getString("ERROR_ChoseAnAvailableOption", context.chat_data.get("lang")),
+    )
+    # Return to the SELECT_LANG state.
+    return SELECT_LANG
+
+
+def cancelConversation(update: Update, context: CallbackContext) -> int:
+    """Ends an active conversation.
 
     Args:
-        update (Update): _description_
-        context (CallbackContext): _description_
+        update (Update):
+        context (CallbackContext):
+
+    Returns:
+        ConversationHandler.END: signal to end the conversation
     """
-    if context.chat_data.get("lang") == None:
-        chatLanguage = fetchLang(update.effective_chat.id)
+    # verifyChatData(update=update, context=context)
 
-        if chatLanguage:
-            context.chat_data.update({"lang": chatLanguage[0]})
-        else:
-            insertChat(update.effective_chat.id, update.effective_user.language_code)
-            context.chat_data.update({"lang": update.effective_user.language_code})
-
-    # If other data needs to be refreshed or checked it will be set below.
+    try:
+        query = update.callback_query
+        query.answer()
+    except:
+        update.message.reply_text(
+            text=getString("GENERAL_OperationCanceled", context.chat_data.get("lang"))
+        )
+    else:
+        query.edit_message_text(
+            text=getString("GENERAL_OperationCanceled", context.chat_data.get("lang"))
+        )
+    finally:
+        return ConversationHandler.END
