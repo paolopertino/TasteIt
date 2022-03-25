@@ -35,7 +35,7 @@ from telegram.ext import (
 from telegram import ParseMode
 
 import logging
-from bot_functionalities.search_restaurant import SELECT_FOOD
+from bot_functionalities.search_restaurant import SELECT_FOOD, priceChanged
 
 from utils.api_key import ApiKey, Service
 from utils.conversation_utils import notAvailableOption, cancelConversation
@@ -56,6 +56,7 @@ from bot_functionalities import (
     SELECT_LANG,
     SELECT_STARTING_POSITION,
     SELECT_FOOD,
+    PICK_PRICE,
     CHECK_SEARCH_INFO,
 )
 from data import setupTables
@@ -127,6 +128,9 @@ def main():
                         (Filters.regex(r"^[a-zA-Z]+( [a-zA-Z]+)*$")),
                         selectFood,
                     ),
+                ],
+                PICK_PRICE: [
+                    CallbackQueryHandler(priceChanged, pattern=r"^[1-5]$"),
                 ],
                 CHECK_SEARCH_INFO: [
                     CallbackQueryHandler(changeFood, pattern="^" + "CHANGE_FOOD" + "$"),

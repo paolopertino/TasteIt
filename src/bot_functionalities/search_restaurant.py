@@ -30,6 +30,8 @@ from sys import path
 
 from custom_exceptions import GoogleCriticalErrorException, NoPlaceFoundException
 from utils.general_place import GeneralPlace
+from utils.research_info import ResearchInfo
+from utils.restaurant import Restaurant
 
 path.append("..")
 
@@ -38,7 +40,7 @@ from STRINGS_LIST import getString
 from tools import verifyChatData
 import utils
 
-SELECT_STARTING_POSITION, SELECT_FOOD, CHECK_SEARCH_INFO = range(3)
+SELECT_STARTING_POSITION, SELECT_FOOD, PICK_PRICE, CHECK_SEARCH_INFO = range(4)
 
 
 def startSearch(update: Update, context: CallbackContext):
@@ -181,21 +183,180 @@ def selectFood(update: Update, context: CallbackContext):
     return CHECK_SEARCH_INFO
 
 
-# TODO: make changeFunctions
 def changeFood(update: Update, context: CallbackContext):
-    print("changing food")
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
+        text=getString(
+            "GENERAL_FoodPreferenceReset",
+            context.chat_data.get("lang"),
+        ),
+    )
+
+    return SELECT_FOOD
 
 
 def changeTime(update: Update, context: CallbackContext):
-    print("changing time")
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    context.chat_data.get("research_info").opennow = not (
+        context.chat_data.get("research_info").opennow
+    )
+    searchInfo = context.chat_data.get("research_info")
+
+    keyboard = [
+        [
+            InlineKeyboardButton("🍝", callback_data="CHANGE_FOOD"),
+            InlineKeyboardButton("🕧", callback_data="CHANGE_TIME"),
+            InlineKeyboardButton("💶", callback_data="CHANGE_PRICE"),
+        ],
+        [
+            InlineKeyboardButton("🔎", callback_data="SEARCH"),
+            InlineKeyboardButton("❌", callback_data="end"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
+        text=getString(
+            "GENERAL_SearchRestaurantInfoRecap",
+            context.chat_data.get("lang"),
+            searchInfo.food,
+            "✅" if searchInfo.opennow == True else "❌",
+            "€" * searchInfo.cost,
+        ),
+        reply_markup=reply_markup,
+    )
 
 
 def changePrice(update: Update, context: CallbackContext):
-    print("changing price")
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    keyboard = [
+        [
+            InlineKeyboardButton("€", callback_data="1"),
+            InlineKeyboardButton("€€", callback_data="2"),
+            InlineKeyboardButton("€€€", callback_data="3"),
+        ],
+        [
+            InlineKeyboardButton("€€€€", callback_data="4"),
+            InlineKeyboardButton("€€€€€", callback_data="5"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    searchInfo = context.chat_data.get("research_info")
+
+    context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
+        text=getString(
+            "GENERAL_SearchRestaurantInfoRecap",
+            context.chat_data.get("lang"),
+            searchInfo.food,
+            "✅" if searchInfo.opennow == True else "❌",
+            "€" * searchInfo.cost,
+        ),
+        reply_markup=reply_markup,
+    )
+
+    return PICK_PRICE
+
+
+def priceChanged(update: Update, context: CallbackContext):
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    newPrice = int(update.callback_query.data)
+    searchInfo = context.chat_data.get("research_info")
+    searchInfo.cost = newPrice
+
+    keyboard = [
+        [
+            InlineKeyboardButton("🍝", callback_data="CHANGE_FOOD"),
+            InlineKeyboardButton("🕧", callback_data="CHANGE_TIME"),
+            InlineKeyboardButton("💶", callback_data="CHANGE_PRICE"),
+        ],
+        [
+            InlineKeyboardButton("🔎", callback_data="SEARCH"),
+            InlineKeyboardButton("❌", callback_data="end"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
+        text=getString(
+            "GENERAL_SearchRestaurantInfoRecap",
+            context.chat_data.get("lang"),
+            searchInfo.food,
+            "✅" if searchInfo.opennow == True else "❌",
+            "€" * searchInfo.cost,
+        ),
+        reply_markup=reply_markup,
+    )
+
+    return CHECK_SEARCH_INFO
 
 
 def searchRestaurant(update: Update, context: CallbackContext):
-    print("searching restaurant")
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    searchInfo = context.chat_data.get("research_info")
+
+    try:
+        placesFound = __fetchRestaurant(searchInfo, context.chat_data.get("lang"))
+    except NoPlaceFoundException:
+        context.bot.edit_message_text(
+            chat_id=update.effective_chat.id,
+            message_id=context.chat_data.get("search_message_id"),
+            text=getString("ERROR_NoRestaurantsFound", context.chat_data.get("lang")),
+        )
+
+        endSearchConversation(update=update, context=context)
+    except GoogleCriticalErrorException:
+        context.bot.edit_message_text(
+            chat_id=update.effective_chat.id,
+            message_id=context.chat_data.get("search_message_id"),
+            text=getString("ERROR_GoogleCriticalError", context.chat_data.get("lang")),
+        )
+
+        endSearchConversation(update=update, context=context)
+    else:
+        fetchedRestaurants = []
+        for result in placesFound.get("results"):
+            fetchedRestaurants.append(
+                Restaurant(
+                    result.get("name"),
+                    result.get("geometry").get("location").get("lat"),
+                    result.get("geometry").get("location").get("lng"),
+                    result.get("place_id"),
+                    result.get("price_level"),
+                    result.get("rating"),
+                    result.get("user_ratings_total"),
+                )
+            )
+
+        context.chat_data.update({"restaurants_list": fetchedRestaurants})
+        # TODO: fare una tastiera per scorrere i ristoranti (salvare indice del ristorante mostrato)
 
 
 def __getPlaces(textQuery: str) -> list:
@@ -224,6 +385,27 @@ def __formatInputText(textToFormat: str) -> str:
     return textToFormat.replace(" ", "%20")
 
 
+def __fetchRestaurant(researchInfo: ResearchInfo, lang: str):
+    googleKey = utils.ApiKey(utils.Service.GOOGLE_PLACES).value
+    googleResult = get(
+        f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&opennow={str(researchInfo.opennow).lower()}&language={lang}&radius=8000&location={researchInfo.latitude}%2C{researchInfo.longitude}&type=restaurant&key={googleKey}"
+    )
+
+    googleResult.raise_for_status()
+
+    # Parsing google response (json) to dictionary
+    googleResult = loads(googleResult.text)
+
+    if googleResult.get("status") == "OK":
+        return googleResult
+    elif googleResult.get("status") == "ZERO_RESULTS":
+        raise NoPlaceFoundException(researchInfo.location, "Place not found")
+    else:
+        raise GoogleCriticalErrorException(
+            "Google critical error; check the google key status."
+        )
+
+
 def endSearchConversation(update: Update, context: CallbackContext):
     """Ends the search conversation.
 
@@ -234,5 +416,7 @@ def endSearchConversation(update: Update, context: CallbackContext):
         context.chat_data.pop("search_message_id")
     if context.chat_data.get("research_info") != None:
         context.chat_data.pop("research_info")
+    if context.chat_data.get("restaurants_list") != None:
+        context.chat_data.pop("restaurants_list")
 
     return utils.cancelConversation(update=update, context=context)

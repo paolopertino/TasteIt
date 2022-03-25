@@ -82,19 +82,27 @@ GENERAL_STRINGS = {
     },
     "GENERAL_SearchRestaurantCurrentPositionAccepted": {
         "it": """
-                 Perfetto ✅, inizierò la mia ricerca a partire dalla tua *posizione attuale*\.\nCosa vuoi mangiare?
+                 Perfetto ✅, inizierò la mia ricerca a partire dalla tua *posizione attuale*\.\nCosa vuoi mangiare\?
               """,
         "en": """
-                 Awesome ✅, I'll start the research from your *current position*\.\nWhat would you like to eat?
+                 Awesome ✅, I'll start the research from your *current position*\.\nWhat would you like to eat\?
               """,
     },
     "GENERAL_SearchRestaurantInfoRecap": {
         "it": """
-               ℹ️ *TasteIt \- Info* ℹ️\nCibo 🍝 \- *{}*\nRistorante aperto ora 🕧 \- *{}*\nPrezzo massimo 💶 \- *{}*\n\nVuoi modificare qualcosa?
+               ℹ️ *TasteIt \- Info* ℹ️\nCibo 🍝 \- *{}*\nRistorante aperto ora 🕧 \- *{}*\nPrezzo massimo 💶 \- *{}*\n\nVuoi modificare qualcosa\?
               """,
         "en": """
-               ℹ️ *TasteIt \- Info* ℹ️\nFood 🍝 \- *{}*\nRestaurant open now 🕧 \- *{}*\nMax price 💶 \- *{}*\n\nDo you need to modify something?
+               ℹ️ *TasteIt \- Info* ℹ️\nFood 🍝 \- *{}*\nRestaurant open now 🕧 \- *{}*\nMax price 💶 \- *{}*\n\nDo you need to modify something\?
               """,
+    },
+    "GENERAL_FoodPreferenceReset": {
+        "it": """
+               Cosa vuoi mangiare\?
+        """,
+        "en": """
+               What would you like to eat\?
+        """,
     },
 }
 
@@ -129,6 +137,14 @@ ERROR_STRINGS = {
               """,
         "en": """
                  No places found\. Please\, send me back another location name or your current position\.
+              """,
+    },
+    "ERROR_NoRestaurantsFound": {
+        "it": """
+                 Nessun ristorante trovato con i parametri specificati\. Prova ad iniziare una nuova ricerca\.
+              """,
+        "en": """
+                 No restaurants found with the specified parameters\. Try starting a new research\.
               """,
     },
     "ERROR_InvalidPosition": {

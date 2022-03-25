@@ -4,6 +4,7 @@ from .change_language import SELECT_LANG, setLanguage, changeLanguage
 from .search_restaurant import (
     SELECT_STARTING_POSITION,
     SELECT_FOOD,
+    PICK_PRICE,
     CHECK_SEARCH_INFO,
     startSearch,
     searchLocationByName,
