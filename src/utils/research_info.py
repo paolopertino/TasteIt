@@ -5,7 +5,7 @@ class ResearchInfo:
     def __init__(self):
         self.__startingPlace: GeneralPlace = None
         self.__maxCost: int = 2
-        self.__openNow: bool = False
+        self.__openNow: bool = True
         self.__specifiedFood: str = None
 
     @property

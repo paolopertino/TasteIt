@@ -88,6 +88,14 @@ GENERAL_STRINGS = {
                  Awesome ✅, I'll start the research from your *current position*\.\nWhat would you like to eat?
               """,
     },
+    "GENERAL_SearchRestaurantInfoRecap": {
+        "it": """
+               ℹ️ *TasteIt \- Info* ℹ️\nCibo 🍝 \- *{}*\nRistorante aperto ora 🕧 \- *{}*\nPrezzo massimo 💶 \- *{}*\n\nVuoi modificare qualcosa?
+              """,
+        "en": """
+               ℹ️ *TasteIt \- Info* ℹ️\nFood 🍝 \- *{}*\nRestaurant open now 🕧 \- *{}*\nMax price 💶 \- *{}*\n\nDo you need to modify something?
+              """,
+    },
 }
 
 ERROR_STRINGS = {

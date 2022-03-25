@@ -36,8 +36,6 @@ def notAvailableOption(update: Update, context: CallbackContext) -> int:
     update.message.reply_text(
         getString("ERROR_ChoseAnAvailableOption", context.chat_data.get("lang")),
     )
-    # Return to the SELECT_LANG state.
-    return SELECT_LANG
 
 
 def cancelConversation(update: Update, context: CallbackContext) -> int:
@@ -50,7 +48,7 @@ def cancelConversation(update: Update, context: CallbackContext) -> int:
     Returns:
         ConversationHandler.END: signal to end the conversation
     """
-    # verifyChatData(update=update, context=context)
+    verifyChatData(update=update, context=context)
 
     try:
         query = update.callback_query

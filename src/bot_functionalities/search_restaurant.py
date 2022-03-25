@@ -38,7 +38,7 @@ from STRINGS_LIST import getString
 from tools import verifyChatData
 import utils
 
-SELECT_STARTING_POSITION, SELECT_FOOD = range(2)
+SELECT_STARTING_POSITION, SELECT_FOOD, CHECK_SEARCH_INFO = range(3)
 
 
 def startSearch(update: Update, context: CallbackContext):
@@ -59,6 +59,8 @@ def startSearch(update: Update, context: CallbackContext):
 
 def searchLocationByName(update: Update, context: CallbackContext):
     """Based on the input given by the user, it search for a location which match."""
+    verifyChatData(update=update, context=context)
+
     inputUserText = update.message.text
     context.bot.delete_message(update.message.chat_id, update.message.message_id)
 
@@ -104,12 +106,17 @@ def searchLocationByName(update: Update, context: CallbackContext):
 
 
 def searchLocationByPosition(update: Update, context: CallbackContext):
-    if update.message.location != None:
+    verifyChatData(update=update, context=context)
+
+    userPosition = update.message.location
+    context.bot.delete_message(update.message.chat_id, update.message.message_id)
+
+    if userPosition != None:
         searchInfos = utils.ResearchInfo()
         searchInfos.location = GeneralPlace(
             "PERSONAL_POS",
-            update.message.location.latitude,
-            update.message.location.longitude,
+            userPosition.latitude,
+            userPosition.longitude,
         )
         context.chat_data.update({"research_info": searchInfos})
 
@@ -137,7 +144,58 @@ def searchLocationByPosition(update: Update, context: CallbackContext):
 
 
 def selectFood(update: Update, context: CallbackContext):
-    print("ciao")
+    verifyChatData(update=update, context=context)
+
+    selectedFood = update.message.text
+    context.bot.delete_message(update.message.chat_id, update.message.message_id)
+
+    searchInfo = context.chat_data.get("research_info")
+    searchInfo.food = selectedFood
+
+    keyboard = [
+        [
+            InlineKeyboardButton("🍝", callback_data="CHANGE_FOOD"),
+            InlineKeyboardButton("🕧", callback_data="CHANGE_TIME"),
+            InlineKeyboardButton("💶", callback_data="CHANGE_PRICE"),
+        ],
+        [
+            InlineKeyboardButton("🔎", callback_data="SEARCH"),
+            InlineKeyboardButton("❌", callback_data="end"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
+        text=getString(
+            "GENERAL_SearchRestaurantInfoRecap",
+            context.chat_data.get("lang"),
+            searchInfo.food,
+            "✅" if searchInfo.opennow == True else "❌",
+            "€" * searchInfo.cost,
+        ),
+        reply_markup=reply_markup,
+    )
+
+    return CHECK_SEARCH_INFO
+
+
+# TODO: make changeFunctions
+def changeFood(update: Update, context: CallbackContext):
+    print("changing food")
+
+
+def changeTime(update: Update, context: CallbackContext):
+    print("changing time")
+
+
+def changePrice(update: Update, context: CallbackContext):
+    print("changing price")
+
+
+def searchRestaurant(update: Update, context: CallbackContext):
+    print("searching restaurant")
 
 
 def __getPlaces(textQuery: str) -> list:

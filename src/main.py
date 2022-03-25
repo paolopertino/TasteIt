@@ -48,10 +48,15 @@ from bot_functionalities import (
     searchLocationByName,
     searchLocationByPosition,
     selectFood,
+    changeFood,
+    changeTime,
+    changePrice,
+    searchRestaurant,
     endSearchConversation,
     SELECT_LANG,
     SELECT_STARTING_POSITION,
     SELECT_FOOD,
+    CHECK_SEARCH_INFO,
 )
 from data import setupTables
 
@@ -119,8 +124,21 @@ def main():
                 ],
                 SELECT_FOOD: [
                     MessageHandler(
-                        (Filters.text & ~Filters.location & ~Filters.command),
+                        (Filters.regex(r"^[a-zA-Z]+( [a-zA-Z]+)*$")),
                         selectFood,
+                    ),
+                ],
+                CHECK_SEARCH_INFO: [
+                    CallbackQueryHandler(changeFood, pattern="^" + "CHANGE_FOOD" + "$"),
+                    CallbackQueryHandler(changeTime, pattern="^" + "CHANGE_TIME" + "$"),
+                    CallbackQueryHandler(
+                        changePrice, pattern="^" + "CHANGE_PRICE" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        searchRestaurant, pattern="^" + "SEARCH" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        endSearchConversation, pattern="^" + "end" + "$"
                     ),
                 ],
             },
