@@ -21,7 +21,12 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import (
+    ReplyKeyboardMarkup,
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 from telegram.ext import CallbackContext, ConversationHandler
 from requests import get
 from string import capwords
@@ -29,9 +34,10 @@ from json import loads
 from sys import path
 
 from custom_exceptions import GoogleCriticalErrorException, NoPlaceFoundException
+from utils import restaurant
 from utils.general_place import GeneralPlace
 from utils.research_info import ResearchInfo
-from utils.restaurant import Restaurant
+from utils.restaurant import Restaurant, RestaurantList
 
 path.append("..")
 
@@ -40,7 +46,13 @@ from STRINGS_LIST import getString
 from tools import verifyChatData
 import utils
 
-SELECT_STARTING_POSITION, SELECT_FOOD, PICK_PRICE, CHECK_SEARCH_INFO = range(4)
+(
+    SELECT_STARTING_POSITION,
+    SELECT_FOOD,
+    PICK_PRICE,
+    CHECK_SEARCH_INFO,
+    VIEW_SEARCH_RESULTS,
+) = range(5)
 
 
 def startSearch(update: Update, context: CallbackContext):
@@ -341,9 +353,9 @@ def searchRestaurant(update: Update, context: CallbackContext):
 
         endSearchConversation(update=update, context=context)
     else:
-        fetchedRestaurants = []
+        fetchedRestaurants = RestaurantList()
         for result in placesFound.get("results"):
-            fetchedRestaurants.append(
+            fetchedRestaurants.add(
                 Restaurant(
                     result.get("name"),
                     result.get("geometry").get("location").get("lat"),
@@ -356,7 +368,151 @@ def searchRestaurant(update: Update, context: CallbackContext):
             )
 
         context.chat_data.update({"restaurants_list": fetchedRestaurants})
-        # TODO: fare una tastiera per scorrere i ristoranti (salvare indice del ristorante mostrato)
+
+        keyboard = [
+            [
+                InlineKeyboardButton("⬅️", callback_data="PREV_RESTAURANT"),
+                InlineKeyboardButton("➡️", callback_data="NEXT_RESTAURANT"),
+            ],
+            [
+                InlineKeyboardButton(
+                    "💡 Maggiori informazioni", callback_data="DISPLAY_MORE_INFO"
+                ),
+            ],
+            [
+                InlineKeyboardButton("📄+", callback_data="ADD_TO_PREF"),
+                InlineKeyboardButton("❌", callback_data="end"),
+            ],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.bot.edit_message_text(
+            chat_id=update.effective_chat.id,
+            message_id=context.chat_data.get("search_message_id"),
+            text=getString(
+                "GENERAL_RestaurantInfoDisplay",
+                context.chat_data.get("lang"),
+                fetchedRestaurants.current.name,
+                "⭐️" * round(fetchedRestaurants.current.rating)
+                + " <b><i>{}</i></b>/5".format(str(fetchedRestaurants.current.rating)),
+                "<i>{}</i>".format(str(fetchedRestaurants.current.ratingsnumber)),
+            ),
+            reply_markup=reply_markup,
+        )
+
+        return VIEW_SEARCH_RESULTS
+
+
+def showNextRestaurant(update: Update, context: CallbackContext):
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    # Fetching the list of restaurants
+    listOfRestaurants = context.chat_data.get("restaurants_list")
+
+    keyboard = [
+        [
+            InlineKeyboardButton("⬅️", callback_data="PREV_RESTAURANT"),
+            InlineKeyboardButton("➡️", callback_data="NEXT_RESTAURANT"),
+        ],
+        [
+            InlineKeyboardButton(
+                "💡 Maggiori informazioni", callback_data="DISPLAY_MORE_INFO"
+            ),
+        ],
+        [
+            InlineKeyboardButton("📄+", callback_data="ADD_TO_PREF"),
+            InlineKeyboardButton("❌", callback_data="end"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    # Printing the infos of the next element
+    context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
+        text=getString(
+            "GENERAL_RestaurantInfoDisplay",
+            context.chat_data.get("lang"),
+            listOfRestaurants.next.name,
+            "⭐️" * round(listOfRestaurants.next.rating)
+            + " <b><i>{}</i></b>/5".format(str(listOfRestaurants.next.rating)),
+            "<i>{}</i>".format(str(listOfRestaurants.next.ratingsnumber)),
+        ),
+        reply_markup=reply_markup,
+    )
+
+    # Before returning the current element of the internal state of the RestaurantList object is modified:
+    # __currentElement is updated with the restaurant showed before.
+    listOfRestaurants.setCurrentElementWithHisNext()
+
+    return VIEW_SEARCH_RESULTS
+
+
+def showPrevRestaurant(update: Update, context: CallbackContext):
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    # Fetching the list of restaurants
+    listOfRestaurants = context.chat_data.get("restaurants_list")
+
+    keyboard = [
+        [
+            InlineKeyboardButton("⬅️", callback_data="PREV_RESTAURANT"),
+            InlineKeyboardButton("➡️", callback_data="NEXT_RESTAURANT"),
+        ],
+        [
+            InlineKeyboardButton(
+                "💡 Maggiori informazioni", callback_data="DISPLAY_MORE_INFO"
+            ),
+        ],
+        [
+            InlineKeyboardButton("📄+", callback_data="ADD_TO_PREF"),
+            InlineKeyboardButton("❌", callback_data="end"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    # Printing the infos of the next element
+    context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
+        text=getString(
+            "GENERAL_RestaurantInfoDisplay",
+            context.chat_data.get("lang"),
+            listOfRestaurants.prev.name,
+            "⭐️" * round(listOfRestaurants.prev.rating)
+            + " <b><i>{}</i></b>/5".format(str(listOfRestaurants.prev.rating)),
+            "<i>{}</i>".format(str(listOfRestaurants.prev.ratingsnumber)),
+        ),
+        reply_markup=reply_markup,
+    )
+
+    # Before returning the current element of the internal state of the RestaurantList object is modified:
+    # __currentElement is updated with the restaurant showed before.
+    listOfRestaurants.setCurrentElementWithHisPrev()
+
+    return VIEW_SEARCH_RESULTS
+
+
+def getMoreInfoOfCurrentRestaurant(update: Update, context: CallbackContext):
+    # TODO: get more info of the current restaurant
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    print("getting more infos")
+
+
+def addRestaurantToFavorites(update: Update, context: CallbackContext):
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+    # TODO: add the current displayed restaurant to the favorites
+    print("adding to the preferred restaurants")
 
 
 def __getPlaces(textQuery: str) -> list:
@@ -387,9 +543,14 @@ def __formatInputText(textToFormat: str) -> str:
 
 def __fetchRestaurant(researchInfo: ResearchInfo, lang: str):
     googleKey = utils.ApiKey(utils.Service.GOOGLE_PLACES).value
-    googleResult = get(
-        f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&opennow={str(researchInfo.opennow).lower()}&language={lang}&radius=8000&location={researchInfo.latitude}%2C{researchInfo.longitude}&type=restaurant&key={googleKey}"
-    )
+    if researchInfo.opennow:
+        googleResult = get(
+            f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&opennow&language={lang}&radius=10000&location={researchInfo.latitude}%2C{researchInfo.longitude}&type=restaurant&key={googleKey}"
+        )
+    else:
+        googleResult = get(
+            f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&language={lang}&radius=10000&location={researchInfo.latitude}%2C{researchInfo.longitude}&type=restaurant&key={googleKey}"
+        )
 
     googleResult.raise_for_status()
 

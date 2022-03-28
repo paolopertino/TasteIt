@@ -6,6 +6,7 @@ from .search_restaurant import (
     SELECT_FOOD,
     PICK_PRICE,
     CHECK_SEARCH_INFO,
+    VIEW_SEARCH_RESULTS,
     startSearch,
     searchLocationByName,
     searchLocationByPosition,
@@ -14,5 +15,9 @@ from .search_restaurant import (
     changeTime,
     changePrice,
     searchRestaurant,
+    showNextRestaurant,
+    showPrevRestaurant,
+    getMoreInfoOfCurrentRestaurant,
+    addRestaurantToFavorites,
     endSearchConversation,
 )

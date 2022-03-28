@@ -52,12 +52,17 @@ from bot_functionalities import (
     changeTime,
     changePrice,
     searchRestaurant,
+    showNextRestaurant,
+    showPrevRestaurant,
+    getMoreInfoOfCurrentRestaurant,
+    addRestaurantToFavorites,
     endSearchConversation,
     SELECT_LANG,
     SELECT_STARTING_POSITION,
     SELECT_FOOD,
     PICK_PRICE,
     CHECK_SEARCH_INFO,
+    VIEW_SEARCH_RESULTS,
 )
 from data import setupTables
 
@@ -79,7 +84,7 @@ def main():
 
     telegramKey = ApiKey(service=Service.TELEGRAM, devMode=_DEVMODE).value
 
-    defaults = Defaults(parse_mode=ParseMode.MARKDOWN_V2)
+    defaults = Defaults(parse_mode=ParseMode.HTML)
     updater = Updater(telegramKey, use_context=True, defaults=defaults)
     dispatcher = updater.dispatcher
 
@@ -140,6 +145,24 @@ def main():
                     ),
                     CallbackQueryHandler(
                         searchRestaurant, pattern="^" + "SEARCH" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        endSearchConversation, pattern="^" + "end" + "$"
+                    ),
+                ],
+                VIEW_SEARCH_RESULTS: [
+                    CallbackQueryHandler(
+                        showNextRestaurant, pattern="^" + "NEXT_RESTAURANT" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        showPrevRestaurant, pattern="^" + "PREV_RESTAURANT" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        getMoreInfoOfCurrentRestaurant,
+                        pattern="^" + "DISPLAY_MORE_INFO" + "$",
+                    ),
+                    CallbackQueryHandler(
+                        addRestaurantToFavorites, pattern="^" + "ADD_TO_PREF" + "$"
                     ),
                     CallbackQueryHandler(
                         endSearchConversation, pattern="^" + "end" + "$"
