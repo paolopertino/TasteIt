@@ -438,9 +438,6 @@ def showCurrentRestaurant(update: Update, context: CallbackContext):
     """Display the current restaurant name and ratings and set up some possible actions."""
     verifyChatData(update=update, context=context)
 
-    query = update.callback_query
-    query.answer()
-
     # Fetching the list of restaurants
     listOfRestaurants = context.chat_data.get("restaurants_list")
 
