@@ -488,45 +488,48 @@ def showCurrentRestaurant(update: Update, context: CallbackContext):
     return VIEW_SEARCH_RESULTS
 
 
-# TODO: sono arrivato qui per scrivere la documentazione
-
-
 def showNextRestaurant(update: Update, context: CallbackContext):
+    """Updates the current element of the restaurants list with his next, and shows that restaurant."""
     verifyChatData(update=update, context=context)
 
     query = update.callback_query
     query.answer()
 
     # Fetching the list of restaurants and picking the next
-    listOfRestaurants = context.chat_data.get(
-        "restaurants_list"
-    ).setCurrentElementWithHisNext()
+    context.chat_data.get("restaurants_list").setCurrentElementWithHisNext()
     showCurrentRestaurant(update, context)
 
 
 def showPrevRestaurant(update: Update, context: CallbackContext):
+    """Updates the current element of the restaurants list with his previous, and shows that restaurant."""
     verifyChatData(update=update, context=context)
 
     query = update.callback_query
     query.answer()
 
     # Fetching the list of restaurants and picking the next
-    listOfRestaurants = context.chat_data.get(
-        "restaurants_list"
-    ).setCurrentElementWithHisPrev()
+    context.chat_data.get("restaurants_list").setCurrentElementWithHisPrev()
     showCurrentRestaurant(update, context)
 
 
-def getMoreInfoOfCurrentRestaurant(update: Update, context: CallbackContext):
+def getMoreInfoOfCurrentRestaurant(update: Update, context: CallbackContext) -> int:
+    """Fetches in-depth details of the current restaurant and shows them to the user."""
     verifyChatData(update=update, context=context)
 
     query = update.callback_query
     query.answer()
 
+    # Getting the current restaurant and updating his attributes with datailed infos.
     currentPlace: Restaurant = context.chat_data.get("restaurants_list").current
     if not currentPlace.isdetailed:
         __fetchDetailedInfosOfRestaurant(currentPlace, context.chat_data.get("lang"))
 
+    # Creating the keyboard to attach to the display restaurants message:
+    #   by clicking 🌐                 the user will open the restaurant's website if present, otherwise it links google.com;
+    #   by clicking 🗺                 the user will be redirected to google maps to start its navigation;
+    #   by clicking ⭐️                 the user will be able to see all the restaurant's reviews;
+    #   by clicking ↩️                 the user get back to the detailed informations message;
+    #   by clicking ❌                 the conversation will end.
     keyboard = [
         [
             InlineKeyboardButton(text="🌐", url=f"{currentPlace.website}"),
@@ -559,28 +562,40 @@ def getMoreInfoOfCurrentRestaurant(update: Update, context: CallbackContext):
         reply_markup=reply_markup,
     )
 
+    # The DETAILED_INFO state handles the possibility to view the restaurant's reviews
+    # or eventually going back to the restaurants list.
     return DETAILED_INFO
 
 
 def addRestaurantToFavorites(update: Update, context: CallbackContext):
+    """Starts the process to add the current restaurant to a favourite list."""
     verifyChatData(update=update, context=context)
 
     query = update.callback_query
     query.answer()
     # TODO: add the current displayed restaurant to the favorites
+    #       (STEP 1) Handle the creation of a category list
+    #       (STEP 2) adding the restaurant to the selected list
     print("adding to the preferred restaurants")
 
 
-def showReviews(update: Update, context: CallbackContext):
+def showReviews(update: Update, context: CallbackContext) -> int:
+    """Shows the current restaurant's reviews."""
     verifyChatData(update=update, context=context)
 
     query = update.callback_query
     query.answer()
 
+    # Fetching the current review of the current restaurant
     restaurantCurrentReview: Rating = context.chat_data.get(
         "restaurants_list"
     ).current.reviews.current
 
+    # Creating the keyboard to attach to the display restaurants message:
+    #   by clicking ⬅️                 the user will switch to the previous review of the list;
+    #   by clicking ➡️                 the user will switch to the next review of the list;
+    #   by clicking ↩️                 the user get back to the detailed informations message;
+    #   by clicking ❌                 the conversation will end.
     keyboard = [
         [
             InlineKeyboardButton("⬅️", callback_data="PREV_REVIEW"),
@@ -608,10 +623,12 @@ def showReviews(update: Update, context: CallbackContext):
         reply_markup=reply_markup,
     )
 
+    # The VIEW_REVIEWS state allows the user to switch between reviews handling prev&next button callbacks.
     return VIEW_REVIEWS
 
 
 def showPrevReview(update: Update, context: CallbackContext):
+    """Updates the current element of the reviews list with his previous, and shows that review."""
     verifyChatData(update=update, context=context)
 
     query = update.callback_query
@@ -624,6 +641,7 @@ def showPrevReview(update: Update, context: CallbackContext):
 
 
 def showNextReview(update: Update, context: CallbackContext):
+    """Updates the current element of the reviews list with his next, and shows that review."""
     verifyChatData(update=update, context=context)
 
     query = update.callback_query
