@@ -431,10 +431,10 @@ def searchRestaurant(update: Update, context: CallbackContext) -> int:
 
         context.chat_data.update({"restaurants_list": fetchedRestaurants})
 
-        showCurrentRestaurant(update, context)
+        return showCurrentRestaurant(update, context)
 
 
-def showCurrentRestaurant(update: Update, context: CallbackContext):
+def showCurrentRestaurant(update: Update, context: CallbackContext) -> int:
     """Display the current restaurant name and ratings and set up some possible actions."""
     verifyChatData(update=update, context=context)
 
@@ -485,7 +485,7 @@ def showCurrentRestaurant(update: Update, context: CallbackContext):
     return VIEW_SEARCH_RESULTS
 
 
-def showNextRestaurant(update: Update, context: CallbackContext):
+def showNextRestaurant(update: Update, context: CallbackContext) -> int:
     """Updates the current element of the restaurants list with his next, and shows that restaurant."""
     verifyChatData(update=update, context=context)
 
@@ -494,10 +494,10 @@ def showNextRestaurant(update: Update, context: CallbackContext):
 
     # Fetching the list of restaurants and picking the next
     context.chat_data.get("restaurants_list").setCurrentElementWithHisNext()
-    showCurrentRestaurant(update, context)
+    return showCurrentRestaurant(update, context)
 
 
-def showPrevRestaurant(update: Update, context: CallbackContext):
+def showPrevRestaurant(update: Update, context: CallbackContext) -> int:
     """Updates the current element of the restaurants list with his previous, and shows that restaurant."""
     verifyChatData(update=update, context=context)
 
@@ -506,7 +506,7 @@ def showPrevRestaurant(update: Update, context: CallbackContext):
 
     # Fetching the list of restaurants and picking the next
     context.chat_data.get("restaurants_list").setCurrentElementWithHisPrev()
-    showCurrentRestaurant(update, context)
+    return showCurrentRestaurant(update, context)
 
 
 def getMoreInfoOfCurrentRestaurant(update: Update, context: CallbackContext) -> int:
@@ -624,7 +624,7 @@ def showReviews(update: Update, context: CallbackContext) -> int:
     return VIEW_REVIEWS
 
 
-def showPrevReview(update: Update, context: CallbackContext):
+def showPrevReview(update: Update, context: CallbackContext) -> int:
     """Updates the current element of the reviews list with his previous, and shows that review."""
     verifyChatData(update=update, context=context)
 
@@ -634,10 +634,10 @@ def showPrevReview(update: Update, context: CallbackContext):
     context.chat_data.get(
         "restaurants_list"
     ).current.reviews.setCurrentElementWithHisPrev()
-    showReviews(update, context)
+    return showReviews(update, context)
 
 
-def showNextReview(update: Update, context: CallbackContext):
+def showNextReview(update: Update, context: CallbackContext) -> int:
     """Updates the current element of the reviews list with his next, and shows that review."""
     verifyChatData(update=update, context=context)
 
@@ -647,7 +647,7 @@ def showNextReview(update: Update, context: CallbackContext):
     context.chat_data.get(
         "restaurants_list"
     ).current.reviews.setCurrentElementWithHisNext()
-    showReviews(update, context)
+    return showReviews(update, context)
 
 
 def endSearchConversation(update: Update, context: CallbackContext) -> int:
