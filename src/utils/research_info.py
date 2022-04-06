@@ -2,21 +2,28 @@ from utils.general_place import GeneralPlace
 
 
 class ResearchInfo:
+    """An object to represent the restaurants research details.
+
+    Attributes
+    ----------
+    :attr:`__startingPlace` : GeneralPlace
+        the location from which to start the location
+    :attr:`__maxCost` : int, default 3
+        the max cost rate accepted for the research (it can assume values from 1 to 5 depending on the expensiveness chosen)
+    :attr:`__openNow` : bool, default False
+        defines if you want fetch both closed and open restaurant at the time of the research or not (otherwise only open restaurants will be fetched)
+    :attr:`__specifiedFood` : str
+        desired food chosen by the user
+    """
+
     def __init__(self):
         self.__startingPlace: GeneralPlace = None
-        self.__maxCost: int = 2
-        self.__openNow: bool = True
+        self.__maxCost: int = 3
+        self.__openNow: bool = False
         self.__specifiedFood: str = None
 
     @property
     def location(self):
-        """The name of the starting location if present.
-
-        In case the research starts from a Position Message sent by the user, no name is provided.
-
-        Returns:
-            str: the name of the starting location | None
-        """
         return self.__startingPlace.name
 
     @location.setter

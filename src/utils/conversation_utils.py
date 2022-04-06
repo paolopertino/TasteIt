@@ -41,10 +41,6 @@ def notAvailableOption(update: Update, context: CallbackContext) -> int:
 def cancelConversation(update: Update, context: CallbackContext) -> int:
     """Ends an active conversation.
 
-    Args:
-        update (Update):
-        context (CallbackContext):
-
     Returns:
         ConversationHandler.END: signal to end the conversation
     """

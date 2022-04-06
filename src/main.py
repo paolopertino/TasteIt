@@ -35,7 +35,7 @@ from telegram.ext import (
 from telegram import ParseMode
 
 import logging
-from bot_functionalities.search_restaurant import SELECT_FOOD, priceChanged
+from bot_functionalities.search_restaurant import showNextReview, showPrevReview
 
 from utils.api_key import ApiKey, Service
 from utils.conversation_utils import notAvailableOption, cancelConversation
@@ -50,12 +50,15 @@ from bot_functionalities import (
     selectFood,
     changeFood,
     changeTime,
+    priceChanged,
     changePrice,
     searchRestaurant,
+    showCurrentRestaurant,
     showNextRestaurant,
     showPrevRestaurant,
     getMoreInfoOfCurrentRestaurant,
     addRestaurantToFavorites,
+    showReviews,
     endSearchConversation,
     SELECT_LANG,
     SELECT_STARTING_POSITION,
@@ -63,6 +66,8 @@ from bot_functionalities import (
     PICK_PRICE,
     CHECK_SEARCH_INFO,
     VIEW_SEARCH_RESULTS,
+    DETAILED_INFO,
+    VIEW_REVIEWS,
 )
 from data import setupTables
 
@@ -163,6 +168,32 @@ def main():
                     ),
                     CallbackQueryHandler(
                         addRestaurantToFavorites, pattern="^" + "ADD_TO_PREF" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        endSearchConversation, pattern="^" + "end" + "$"
+                    ),
+                ],
+                DETAILED_INFO: [
+                    CallbackQueryHandler(
+                        showReviews, pattern="^" + "VIEW_REVIEWS" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        showCurrentRestaurant, pattern="^" + "BACK_TO_LIST" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        endSearchConversation, pattern="^" + "end" + "$"
+                    ),
+                ],
+                VIEW_REVIEWS: [
+                    CallbackQueryHandler(
+                        showPrevReview, pattern="^" + "PREV_REVIEW" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        showNextReview, pattern="^" + "NEXT_REVIEW" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        getMoreInfoOfCurrentRestaurant,
+                        pattern="^" + "BACK_TO_DETAILED_INFO" + "$",
                     ),
                     CallbackQueryHandler(
                         endSearchConversation, pattern="^" + "end" + "$"

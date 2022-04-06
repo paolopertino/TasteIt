@@ -112,6 +112,30 @@ GENERAL_STRINGS = {
                🍣 <b>TasteIt - Results</b> 🍝\n Restaurant - <b>{}</b>\n{}\n{} total reviews.
         """,
     },
+    "GENERAL_MoreInfos": {
+        "it": """
+        💡 Maggiori informazioni
+        """,
+        "en": """
+        💡 More infos
+        """,
+    },
+    "GENERAL_DetailedInfoOfRestaurant": {
+        "it": """
+               🍣 <b>TasteIt - Dettaglio</b> 🍝\n\n🍴 Locale - <b>{}</b>\n📍Indirizzo - <b><a href='{}'>{}</a></b>\n ☎️ Telefono - <a href='tel:{}'>{}</a>\n{}\n{} recensioni totali.\n––––––––––––––––––\n\n🕙 Orario 🕟\n{}
+        """,
+        "en": """
+               🍣 <b>TasteIt - Details</b> 🍝\n\n🍴 Restaurant - <b>{}</b>\n📍Address - <b><a href='{}'>{}</a></b>\n ☎️ Phone - <a href='tel:{}'>{}</a>\n{}\n{} total reviews.\n––––––––––––––––––\n\n🕙 Timetable 🕟\n{}
+        """,
+    },
+    "GENERAL_ReviewContent": {
+        "it": """
+               🍣 <b>TasteIt - Recensione</b> 🍝\n\n 💁🏼‍♂️ Autore - <b>{}</b>\n🗓 Data - <b>{}</b>\n\n<i>{}</i>\n{} - {}/5
+        """,
+        "en": """
+               🍣 <b>TasteIt - Review</b> 🍝\n\n 💁🏼‍♂️ Author - <b>{}</b>\n🗓 Date - <b>{}</b>\n\n<i>{}</i>\n{} - {}/5
+        """,
+    },
 }
 
 ERROR_STRINGS = {
@@ -161,6 +185,22 @@ ERROR_STRINGS = {
               """,
         "en": """
                  Invalid position\. Please, send me back again a location name of your interest or your current position.
+              """,
+    },
+    "ERROR_TimetableNotAvailable": {
+        "it": """
+                 <i>Orario non disponibile.</i>
+              """,
+        "en": """
+                 <i>Timetable not available.</i>
+              """,
+    },
+    "ERROR_PhoneNumberNotAvailable": {
+        "it": """
+                 <i>Numero di telefono non disponibile.</i>
+              """,
+        "en": """
+                 <i>Phone number not available.</i>
               """,
     },
 }

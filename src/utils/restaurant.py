@@ -1,4 +1,6 @@
+from utils.doubly_circular_linked_list import DoublyCircularLinkedList
 from utils.general_place import GeneralPlace
+from utils.rating import RatingsList
 
 
 class Restaurant(GeneralPlace):
@@ -40,7 +42,11 @@ class Restaurant(GeneralPlace):
         self.__totalRatings = totalRatings
         self.__timetable = ""
         self.__restaurantAddress = ""
-        self.__ratings = []
+        self.__ratings = RatingsList()
+        self.__website = ""
+        self.__mapsUrl = ""
+        self.__phoneNumber = ""
+        self.__hasAlreadyFetchedDetails = False
 
     @property
     def id(self):
@@ -59,10 +65,44 @@ class Restaurant(GeneralPlace):
         return self.__totalRatings
 
     @property
-    def ratings(self):
-        return self.ratings
+    def phone(self):
+        return self.__phoneNumber
 
-    # TODO: add rating object
+    @phone.setter
+    def phone(self, phoneNumber: str):
+        self.__phoneNumber = phoneNumber
+
+    @property
+    def isdetailed(self):
+        return self.__hasAlreadyFetchedDetails
+
+    @isdetailed.setter
+    def isdetailed(self, isDetailed: bool):
+        self.__hasAlreadyFetchedDetails = isDetailed
+
+    @property
+    def maps(self):
+        return self.__mapsUrl
+
+    @maps.setter
+    def maps(self, mapsUrl: str):
+        self.__mapsUrl = mapsUrl
+
+    @property
+    def reviews(self):
+        return self.__ratings
+
+    @reviews.setter
+    def reviews(self, reviews):
+        self.__ratings = reviews
+
+    @property
+    def website(self):
+        return self.__website
+
+    @website.setter
+    def website(self, placeWebsite):
+        self.__website = placeWebsite
 
     @property
     def address(self):
@@ -81,15 +121,30 @@ class Restaurant(GeneralPlace):
         self.__timetable = timetable
 
 
-class RestaurantList:
+class RestaurantList(DoublyCircularLinkedList):
+    """A list of restaurants with doubly circular linked list features.
+
+    Attributes
+    ----------
+    :attr:`__currentElement` : Restaurant
+        the restaurant on which the cursor is pointing
+    :attr:`__listOfRestaurants` : list
+        a list of restaurants
+    """
+
     def __init__(self):
         self.__currentElement: Restaurant = None
         self.__listOfRestaurants: list = []
 
-    def add(self, restaurant: Restaurant) -> None:
+    def add(self, newElement) -> None:
+        """Add a restaurant to the list as last element.
+
+        Args:
+            `newElement` (Restaurant): the element to add to the list
+        """
         if self.__currentElement == None:
-            self.__currentElement = restaurant
-        self.__listOfRestaurants.append(restaurant)
+            self.__currentElement = newElement
+        self.__listOfRestaurants.append(newElement)
 
     @property
     def next(self):
@@ -98,6 +153,11 @@ class RestaurantList:
         ]
 
     def setCurrentElementWithHisNext(self):
+        """
+        Set the next element of the list as current element.
+
+        If the initial current element is the last one of the list, the new current element will be the first element of the list
+        """
         self.__currentElement = self.__listOfRestaurants[
             (self.__listOfRestaurants.index(self.__currentElement) + 1) % self.size
         ]
@@ -109,6 +169,11 @@ class RestaurantList:
         ]
 
     def setCurrentElementWithHisPrev(self):
+        """
+        Set the previous element of the list as current element.
+
+        If the initial current element is the first one of the list, the new current element will be the last element of the list
+        """
         self.__currentElement = self.__listOfRestaurants[
             (self.__listOfRestaurants.index(self.__currentElement) - 1) % self.size
         ]
