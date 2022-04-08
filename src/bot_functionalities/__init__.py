@@ -21,6 +21,7 @@ from .search_restaurant import (
     showCurrentRestaurant,
     showNextRestaurant,
     showPrevRestaurant,
+    startPollWithCurrentRestaurant,
     getMoreInfoOfCurrentRestaurant,
     addRestaurantToFavorites,
     showReviews,

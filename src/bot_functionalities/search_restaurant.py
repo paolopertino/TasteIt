@@ -21,6 +21,7 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
+from numpy import size
 from telegram import (
     ReplyKeyboardMarkup,
     Update,
@@ -102,7 +103,7 @@ def searchLocationByName(update: Update, context: CallbackContext) -> int:
         )
 
         # In this case the conversation will immediately stop
-        endSearchConversation(update=update, context=context)
+        return endSearchConversation(update=update, context=context)
     else:
         # Setting up the research info. This object will be used to store useful informations of the parameters used for the restaurant research.
         # We take the first candidate since it is most likely the one preferred by the user.
@@ -189,73 +190,13 @@ def selectFood(update: Update, context: CallbackContext) -> int:
     searchInfo: ResearchInfo = context.chat_data.get("research_info")
     searchInfo.food = selectedFood
 
-    # Creating the keyboard to attach to the recap message:
-    #   by clicking 🍝 the user will be able to chose the food again;
-    #   by clicking 🕧 the user will switch the openNow parameter between true and false;
-    #   by clicking 💶 the user will be able to set his max price preference (from 1 to 5 according to his expensiveness preferences);
-    #   by clicking 🔎 the restaurant research will actually begin;
-    #   by clicking ❌ the conversation will end.
-    keyboard = [
-        [
-            InlineKeyboardButton("🍝", callback_data="CHANGE_FOOD"),
-            InlineKeyboardButton("🕧", callback_data="CHANGE_TIME"),
-            InlineKeyboardButton("💶", callback_data="CHANGE_PRICE"),
-        ],
-        [
-            InlineKeyboardButton("🔎", callback_data="SEARCH"),
-            InlineKeyboardButton("❌", callback_data="end"),
-        ],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    context.bot.edit_message_text(
-        chat_id=update.effective_chat.id,
-        message_id=context.chat_data.get("search_message_id"),
-        text=getString(
-            "GENERAL_SearchRestaurantInfoRecap",
-            context.chat_data.get("lang"),
-            searchInfo.food,
-            "✅" if searchInfo.opennow == True else "❌",
-            "€" * searchInfo.cost,
-        ),
-        reply_markup=reply_markup,
-    )
-
-    # Once the recap message is shown the FSM moves to CHECK_SEARCH_INFO state.
-    # That state handles all the user needs to change the search parameters.
-    return CHECK_SEARCH_INFO
+    return showRecapMessage(update, context)
 
 
-def changeFood(update: Update, context: CallbackContext) -> int:
-    """Set up the conversation in order to let the user chose again the food he wants to eat."""
+def showRecapMessage(update: Update, context: CallbackContext):
+    """Update the search message with recap informations."""
     verifyChatData(update=update, context=context)
 
-    query = update.callback_query
-    query.answer()
-
-    context.bot.edit_message_text(
-        chat_id=update.effective_chat.id,
-        message_id=context.chat_data.get("search_message_id"),
-        text=getString(
-            "GENERAL_FoodPreferenceReset",
-            context.chat_data.get("lang"),
-        ),
-    )
-
-    return SELECT_FOOD
-
-
-def changeTime(update: Update, context: CallbackContext):
-    """Set up the conversation in order to let the user chose again the openNow parameter."""
-    verifyChatData(update=update, context=context)
-
-    query = update.callback_query
-    query.answer()
-
-    # Actually inverting the openNow parameter in the research info stored object.
-    context.chat_data.get("research_info").opennow = not (
-        context.chat_data.get("research_info").opennow
-    )
     searchInfo = context.chat_data.get("research_info")
 
     # Creating the keyboard to attach to the recap message:
@@ -289,6 +230,42 @@ def changeTime(update: Update, context: CallbackContext):
         ),
         reply_markup=reply_markup,
     )
+
+    return CHECK_SEARCH_INFO
+
+
+def changeFood(update: Update, context: CallbackContext) -> int:
+    """Set up the conversation in order to let the user chose again the food he wants to eat."""
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
+        text=getString(
+            "GENERAL_FoodPreferenceReset",
+            context.chat_data.get("lang"),
+        ),
+    )
+
+    return SELECT_FOOD
+
+
+def changeTime(update: Update, context: CallbackContext):
+    """Set up the conversation in order to let the user chose again the openNow parameter."""
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    # Actually inverting the openNow parameter in the research info stored object.
+    context.chat_data.get("research_info").opennow = not (
+        context.chat_data.get("research_info").opennow
+    )
+
+    return showRecapMessage(update, context)
 
 
 def changePrice(update: Update, context: CallbackContext) -> int:
@@ -346,40 +323,7 @@ def priceChanged(update: Update, context: CallbackContext):
     searchInfo = context.chat_data.get("research_info")
     searchInfo.cost = newPrice
 
-    # Creating the keyboard to attach to the recap message:
-    #   by clicking 🍝 the user will be able to chose the food again;
-    #   by clicking 🕧 the user will switch the openNow parameter between true and false;
-    #   by clicking 💶 the user will be able to set his max price preference (from 1 to 5 according to his expensiveness preferences);
-    #   by clicking 🔎 the restaurant research will actually begin;
-    #   by clicking ❌ the conversation will end.
-    keyboard = [
-        [
-            InlineKeyboardButton("🍝", callback_data="CHANGE_FOOD"),
-            InlineKeyboardButton("🕧", callback_data="CHANGE_TIME"),
-            InlineKeyboardButton("💶", callback_data="CHANGE_PRICE"),
-        ],
-        [
-            InlineKeyboardButton("🔎", callback_data="SEARCH"),
-            InlineKeyboardButton("❌", callback_data="end"),
-        ],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    context.bot.edit_message_text(
-        chat_id=update.effective_chat.id,
-        message_id=context.chat_data.get("search_message_id"),
-        text=getString(
-            "GENERAL_SearchRestaurantInfoRecap",
-            context.chat_data.get("lang"),
-            searchInfo.food,
-            "✅" if searchInfo.opennow == True else "❌",
-            "€" * searchInfo.cost,
-        ),
-        reply_markup=reply_markup,
-    )
-
-    # Getting back to the recap state.
-    return CHECK_SEARCH_INFO
+    return showRecapMessage(update, context)
 
 
 def searchRestaurant(update: Update, context: CallbackContext) -> int:
@@ -397,13 +341,28 @@ def searchRestaurant(update: Update, context: CallbackContext) -> int:
         placesFound = __fetchRestaurant(searchInfo, context.chat_data.get("lang"))
     except NoPlaceFoundException:
         # Thrown when no restaurants were found with the specfied research informations.
-        # In this case an error message will be sent and the conversation immediately ends.
+        # In this case the recap will pop back.
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=getString("ERROR_NoRestaurantsFound", context.chat_data.get("lang")),
         )
 
-        endSearchConversation(update=update, context=context)
+        context.bot.delete_message(
+            chat_id=update.effective_chat.id,
+            message_id=context.chat_data.get("search_message_id"),
+        )
+        # Creating a new "empty" message. It will be immediately overridden by showRecapMessage method.
+        newMessage = context.bot.send_message(
+            chat_id=update.effective_chat.id, text="_"
+        )
+        context.chat_data.update({"search_message_id": newMessage.message_id})
+
+        # Since no restaurant matched with the given specs, then we reset them to their default value.
+        currentSearchInfo: ResearchInfo = context.chat_data.get("research_info")
+        currentSearchInfo.opennow = False
+        currentSearchInfo.cost = 3
+
+        return showRecapMessage(update, context)
     except GoogleCriticalErrorException:
         # Thrown when an internal google apis error occur.
         # Also in this case an error message is sent and the conversation immediately ends.
@@ -412,7 +371,7 @@ def searchRestaurant(update: Update, context: CallbackContext) -> int:
             text=getString("ERROR_GoogleCriticalError", context.chat_data.get("lang")),
         )
 
-        endSearchConversation(update=update, context=context)
+        return endSearchConversation(update=update, context=context)
     else:
         # If everything has gone fine, a restaurants' list is compiled and stored in chat_data
         fetchedRestaurants = RestaurantList()
@@ -445,24 +404,53 @@ def showCurrentRestaurant(update: Update, context: CallbackContext) -> int:
     #   by clicking ⬅️                 the user will move to the previous restaurant of the list;
     #   by clicking ➡️                 the user will move to the next restaurant of the list;
     #   by clicking GENERAL_MoreInfos  the user will be able to see detailed informations of the current restaurant;
+    #   by clicking GENERAL_PollButton  GROUPS ONLY - a poll with the current restaurants is started
     #   by clicking 📄+                the user can add the current restaurant to his favorites list;
     #   by clicking ❌                 the conversation will end.
-    keyboard = [
+    keyboard = (
         [
-            InlineKeyboardButton("⬅️", callback_data="PREV_RESTAURANT"),
-            InlineKeyboardButton("➡️", callback_data="NEXT_RESTAURANT"),
-        ],
-        [
-            InlineKeyboardButton(
-                getString("GENERAL_MoreInfos", context.chat_data.get("lang")),
-                callback_data="DISPLAY_MORE_INFO",
-            ),
-        ],
-        [
-            InlineKeyboardButton("📄+", callback_data="ADD_TO_PREF"),
-            InlineKeyboardButton("❌", callback_data="end"),
-        ],
-    ]
+            [
+                InlineKeyboardButton("⬅️", callback_data="PREV_RESTAURANT"),
+                InlineKeyboardButton("➡️", callback_data="NEXT_RESTAURANT"),
+            ],
+            [
+                InlineKeyboardButton(
+                    getString("GENERAL_MoreInfos", context.chat_data.get("lang")),
+                    callback_data="DISPLAY_MORE_INFO",
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    getString("GENERAL_PollButton", context.chat_data.get("lang")),
+                    callback_data="START_POLL",
+                ),
+            ],
+            [
+                InlineKeyboardButton("📄+", callback_data="ADD_TO_PREF"),
+                InlineKeyboardButton("❌", callback_data="end"),
+            ],
+        ]
+        if (
+            update.effective_chat.type == "group"
+            or update.effective_chat.type == "supergroup"
+        )
+        else [
+            [
+                InlineKeyboardButton("⬅️", callback_data="PREV_RESTAURANT"),
+                InlineKeyboardButton("➡️", callback_data="NEXT_RESTAURANT"),
+            ],
+            [
+                InlineKeyboardButton(
+                    getString("GENERAL_MoreInfos", context.chat_data.get("lang")),
+                    callback_data="DISPLAY_MORE_INFO",
+                ),
+            ],
+            [
+                InlineKeyboardButton("📄+", callback_data="ADD_TO_PREF"),
+                InlineKeyboardButton("❌", callback_data="end"),
+            ],
+        ]
+    )
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     # Printing the infos of the current element
@@ -507,6 +495,50 @@ def showPrevRestaurant(update: Update, context: CallbackContext) -> int:
     # Fetching the list of restaurants and picking the next
     context.chat_data.get("restaurants_list").setCurrentElementWithHisPrev()
     return showCurrentRestaurant(update, context)
+
+
+def startPollWithCurrentRestaurant(update: Update, context: CallbackContext):
+    """Starts a poll in a group chat with the fetched restaurants."""
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    # Getting a copy of the current restaurants list.
+    restaurantsList: RestaurantList = context.chat_data.get("restaurants_list").clone()
+
+    if restaurantsList.size < 2:
+        # Cannot create a poll with less than 2 options
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=getString(
+                "ERROR_InsufficientPollOptions", context.chat_data.get("lang")
+            ),
+        )
+
+        return showCurrentRestaurant(update, context)
+    elif restaurantsList.size > 10:
+        # Due to telegram internal limits, poll cannot have more than 10 possible choices
+        numberOfPollChoices = 10
+    else:
+        # If  2 <= restaurantsList.size <= 10, than we display only those options
+        numberOfPollChoices = restaurantsList.size
+
+    # Compiling the poll choices with the restaurants names starting from the current one.
+    pollChoices: list = []
+    for i in range(numberOfPollChoices):
+        pollChoices.append(restaurantsList.current.name)
+        restaurantsList.setCurrentElementWithHisNext()
+
+    # Sending the poll. After 1 minute it will automatically close.
+    context.bot.send_poll(
+        update.effective_chat.id,
+        getString("GENERAL_PollStarted", context.chat_data.get("lang")),
+        pollChoices,
+        is_anonymous=False,
+        allows_multiple_answers=False,
+        open_period=60,
+    )
 
 
 def getMoreInfoOfCurrentRestaurant(update: Update, context: CallbackContext) -> int:

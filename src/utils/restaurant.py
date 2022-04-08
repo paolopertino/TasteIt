@@ -120,6 +120,32 @@ class Restaurant(GeneralPlace):
     def timetable(self, timetable):
         self.__timetable = timetable
 
+    def clone(self):
+        """Clones the restaurant object.
+
+        Returns:
+            `copyOfSelf` : `Restaurant` : a copied version of the current restaurant
+        """
+        copyOfSelf: Restaurant = Restaurant(
+            self.name,
+            self.latitude,
+            self.longitude,
+            self.id,
+            self.__priceLevel,
+            self.rating,
+            self.ratingsnumber,
+        )
+
+        copyOfSelf.timetable = self.timetable
+        copyOfSelf.address = self.address
+        copyOfSelf.reviews = self.reviews.clone()
+        copyOfSelf.website = self.website
+        copyOfSelf.maps = self.maps
+        copyOfSelf.phone = self.phone
+        copyOfSelf.isdetailed = self.isdetailed
+
+        return copyOfSelf
+
 
 class RestaurantList(DoublyCircularLinkedList):
     """A list of restaurants with doubly circular linked list features.
@@ -136,6 +162,26 @@ class RestaurantList(DoublyCircularLinkedList):
         self.__currentElement: Restaurant = None
         self.__listOfRestaurants: list = []
 
+    @property
+    def next(self):
+        return self.__listOfRestaurants[
+            (self.__listOfRestaurants.index(self.__currentElement) + 1) % self.size
+        ]
+
+    @property
+    def prev(self):
+        return self.__listOfRestaurants[
+            (self.__listOfRestaurants.index(self.__currentElement) - 1) % self.size
+        ]
+
+    @property
+    def current(self):
+        return self.__currentElement
+
+    @property
+    def size(self):
+        return len(self.__listOfRestaurants)
+
     def add(self, newElement) -> None:
         """Add a restaurant to the list as last element.
 
@@ -145,12 +191,6 @@ class RestaurantList(DoublyCircularLinkedList):
         if self.__currentElement == None:
             self.__currentElement = newElement
         self.__listOfRestaurants.append(newElement)
-
-    @property
-    def next(self):
-        return self.__listOfRestaurants[
-            (self.__listOfRestaurants.index(self.__currentElement) + 1) % self.size
-        ]
 
     def setCurrentElementWithHisNext(self):
         """
@@ -162,12 +202,6 @@ class RestaurantList(DoublyCircularLinkedList):
             (self.__listOfRestaurants.index(self.__currentElement) + 1) % self.size
         ]
 
-    @property
-    def prev(self):
-        return self.__listOfRestaurants[
-            (self.__listOfRestaurants.index(self.__currentElement) - 1) % self.size
-        ]
-
     def setCurrentElementWithHisPrev(self):
         """
         Set the previous element of the list as current element.
@@ -175,13 +209,23 @@ class RestaurantList(DoublyCircularLinkedList):
         If the initial current element is the first one of the list, the new current element will be the last element of the list
         """
         self.__currentElement = self.__listOfRestaurants[
-            (self.__listOfRestaurants.index(self.__currentElement) - 1) % self.size
+            ((self.__listOfRestaurants.index(self.__currentElement) - 1) % self.size)
         ]
 
-    @property
-    def current(self):
-        return self.__currentElement
+    def clone(self):
+        """Clones the restaurants list.
 
-    @property
-    def size(self):
-        return len(self.__listOfRestaurants)
+        Returns:
+            `copyOfSelf` : `RestaurantList`: a copied version of the current list
+        """
+        copyOfSelf: RestaurantList = RestaurantList()
+
+        for restaurant in self.__listOfRestaurants:
+            copyOfSelf.add(restaurant.clone())
+            if self.__listOfRestaurants.index(
+                restaurant
+            ) == self.__listOfRestaurants.index(self.__currentElement):
+                copyOfSelf.__currentElement = copyOfSelf.__listOfRestaurants[
+                    len(copyOfSelf.__listOfRestaurants) - 1
+                ]
+        return copyOfSelf

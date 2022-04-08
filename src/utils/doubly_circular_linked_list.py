@@ -14,6 +14,10 @@ class DoublyCircularLinkedList(ABC):
     def setCurrentElementWithHisPrev(self):
         pass
 
+    @abstractmethod
+    def clone(self):
+        pass
+
     @abstractproperty
     def next(self):
         pass

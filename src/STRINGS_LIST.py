@@ -114,10 +114,26 @@ GENERAL_STRINGS = {
     },
     "GENERAL_MoreInfos": {
         "it": """
-        💡 Maggiori informazioni
+        💡 Maggiori informazioni 💡
         """,
         "en": """
-        💡 More infos
+        💡 More infos 💡
+        """,
+    },
+    "GENERAL_PollButton": {
+        "it": """
+        📊 Avvia un Sondaggio 📊
+        """,
+        "en": """
+        📊 Start a Poll 📊
+        """,
+    },
+    "GENERAL_PollStarted": {
+        "it": """
+        🍣 TasteIt - Sondaggio 🍝\n\n📊 Sondaggio creato. Scegliete un ristorante:
+        """,
+        "en": """
+        🍣 TasteIt - Poll 🍝\n\n📊 Poll started. Pick a restaurant:
         """,
     },
     "GENERAL_DetailedInfoOfRestaurant": {
@@ -177,6 +193,14 @@ ERROR_STRINGS = {
               """,
         "en": """
                  No restaurants found with the specified parameters. Try starting a new research.
+              """,
+    },
+    "ERROR_InsufficientPollOptions": {
+        "it": """
+                 I sondaggi non sono creabili se sono presenti meno 2 di opzioni nella lista.
+              """,
+        "en": """
+                 Cannot create a poll with less than 2 options in the restaurants list.
               """,
     },
     "ERROR_InvalidPosition": {

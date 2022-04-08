@@ -28,16 +28,21 @@ class Rating:
     def date(self):
         return self.__reviewDate
 
+    def clone(self):
+        """Creates a copy of the Rating object.
+
+        Returns:
+            `copyOfSelf` : `Rating` : a copied version of the Rating object
+        """
+        copyOfSelf: Rating = Rating(self.author, self.rating, self.content, self.date)
+
+        return copyOfSelf
+
 
 class RatingsList(DoublyCircularLinkedList):
     def __init__(self):
         self.__currentElement: Rating = None
         self.__listOfRatings: list = []
-
-    def add(self, newElement) -> None:
-        if self.__currentElement == None:
-            self.__currentElement = newElement
-        self.__listOfRatings.append(newElement)
 
     @property
     def next(self):
@@ -45,19 +50,9 @@ class RatingsList(DoublyCircularLinkedList):
             (self.__listOfRatings.index(self.__currentElement) + 1) % self.size
         ]
 
-    def setCurrentElementWithHisNext(self):
-        self.__currentElement = self.__listOfRatings[
-            (self.__listOfRatings.index(self.__currentElement) + 1) % self.size
-        ]
-
     @property
     def prev(self):
         return self.__listOfRatings[
-            (self.__listOfRatings.index(self.__currentElement) - 1) % self.size
-        ]
-
-    def setCurrentElementWithHisPrev(self):
-        self.__currentElement = self.__listOfRatings[
             (self.__listOfRatings.index(self.__currentElement) - 1) % self.size
         ]
 
@@ -68,3 +63,37 @@ class RatingsList(DoublyCircularLinkedList):
     @property
     def size(self):
         return len(self.__listOfRatings)
+
+    def add(self, newElement) -> None:
+        if self.__currentElement == None:
+            self.__currentElement = newElement
+        self.__listOfRatings.append(newElement)
+
+    def setCurrentElementWithHisNext(self):
+        self.__currentElement = self.__listOfRatings[
+            (self.__listOfRatings.index(self.__currentElement) + 1) % self.size
+        ]
+
+    def setCurrentElementWithHisPrev(self):
+        self.__currentElement = self.__listOfRatings[
+            (self.__listOfRatings.index(self.__currentElement) - 1) % self.size
+        ]
+
+    def clone(self):
+        """Clones the ratings list.
+
+        Returns:
+            `copyOfSelf` : `RatingsList` : a copied version of the RatingsList object
+        """
+        copyOfSelf: RatingsList = RatingsList()
+
+        for rating in self.__listOfRatings:
+            copyOfSelf.add(rating.clone())
+            if self.__listOfRatings.index(rating) == self.__listOfRatings.index(
+                self.__currentElement
+            ):
+                copyOfSelf.__currentElement = copyOfSelf.__listOfRatings[
+                    len(copyOfSelf.__listOfRatings) - 1
+                ]
+
+        return copyOfSelf

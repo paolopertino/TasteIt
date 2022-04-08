@@ -35,7 +35,6 @@ from telegram.ext import (
 from telegram import ParseMode
 
 import logging
-from bot_functionalities.search_restaurant import showNextReview, showPrevReview
 
 from utils.api_key import ApiKey, Service
 from utils.conversation_utils import notAvailableOption, cancelConversation
@@ -56,6 +55,9 @@ from bot_functionalities import (
     showCurrentRestaurant,
     showNextRestaurant,
     showPrevRestaurant,
+    showNextReview,
+    showPrevReview,
+    startPollWithCurrentRestaurant,
     getMoreInfoOfCurrentRestaurant,
     addRestaurantToFavorites,
     showReviews,
@@ -161,6 +163,9 @@ def main():
                     ),
                     CallbackQueryHandler(
                         showPrevRestaurant, pattern="^" + "PREV_RESTAURANT" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        startPollWithCurrentRestaurant, pattern="^" + "START_POLL" + "$"
                     ),
                     CallbackQueryHandler(
                         getMoreInfoOfCurrentRestaurant,
