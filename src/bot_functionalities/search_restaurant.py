@@ -809,15 +809,11 @@ def __formatInputText(textToFormat: str) -> str:
 def __fetchRestaurant(researchInfo: ResearchInfo, lang: str):
     googleKey = utils.ApiKey(utils.Service.GOOGLE_PLACES).value
 
-    print(f"{researchInfo.food} {researchInfo.cost} {researchInfo.location} {lang}")
-
     if researchInfo.opennow:
-        print("now open")
         googleResult = get(
             f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&opennow&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&rankby=distance&type=restaurant&key={googleKey}"
         )
     else:
-        print("also closed")
         googleResult = get(
             f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&rankby=distance&type=restaurant&key={googleKey}"
         )
