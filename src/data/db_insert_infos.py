@@ -24,7 +24,7 @@
 from data import dbConnect
 
 
-def insertChat(chatId: str, language: str):
+def insertChat(chatId: str, language: str) -> None:
     """Given a chatId and its preferred language, the method stores them in the Database.
 
     Args:
@@ -34,5 +34,21 @@ def insertChat(chatId: str, language: str):
     connection = dbConnect()
     cursor = connection.cursor()
     cursor.execute("INSERT INTO chat VALUES(?, ?)", (chatId, language))
+    connection.commit()
+    connection.close()
+
+
+def insertList(chatId: str, listName: str) -> None:
+    """Given a chatId and a list name, the method stores them in the database.
+
+    Args:
+        chatId (str): the chat_id to store in the database
+        listName (str): the list name (category in the db)
+    """
+    connection = dbConnect()
+    cursor = connection.cursor()
+    cursor.execute(
+        "INSERT INTO list(chat_id, category) VALUES(?, ?)", (chatId, listName)
+    )
     connection.commit()
     connection.close()

@@ -9,6 +9,8 @@ from .search_restaurant import (
     VIEW_SEARCH_RESULTS,
     DETAILED_INFO,
     VIEW_REVIEWS,
+    FAVORITE_LIST_PICK_STATE,
+    FAVORITE_LIST_CREATE_STATE,
     startSearch,
     searchLocationByName,
     searchLocationByPosition,
@@ -27,5 +29,8 @@ from .search_restaurant import (
     showReviews,
     showPrevReview,
     showNextReview,
+    askFavoriteListName,
+    createList,
+    addToList,
     endSearchConversation,
 )

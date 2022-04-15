@@ -34,18 +34,18 @@ from string import capwords
 from json import loads
 from sys import path
 
-from custom_exceptions import GoogleCriticalErrorException, NoPlaceFoundException
+from data import fetchCategories, insertList
+from tools import verifyChatData
+import utils
 from utils.general_place import GeneralPlace
 from utils.rating import Rating
 from utils.research_info import ResearchInfo
 from utils.restaurant import Restaurant, RestaurantList
+from custom_exceptions import GoogleCriticalErrorException, NoPlaceFoundException
+from STRINGS_LIST import getString
 
 path.append("..")
 
-from STRINGS_LIST import getString
-
-from tools import verifyChatData
-import utils
 
 (
     SELECT_STARTING_POSITION,
@@ -55,7 +55,9 @@ import utils
     VIEW_SEARCH_RESULTS,
     DETAILED_INFO,
     VIEW_REVIEWS,
-) = range(7)
+    FAVORITE_LIST_PICK_STATE,
+    FAVORITE_LIST_CREATE_STATE,
+) = range(9)
 
 
 def startSearch(update: Update, context: CallbackContext) -> int:
@@ -605,7 +607,87 @@ def addRestaurantToFavorites(update: Update, context: CallbackContext):
     # TODO: add the current displayed restaurant to the favorites
     #       (STEP 1) Handle the creation of a category list
     #       (STEP 2) adding the restaurant to the selected list
-    print("adding to the preferred restaurants")
+    return showCategories(update, context)
+
+
+def showCategories(update: Update, context: CallbackContext):
+    """Shows the current available categories for the user or group"""
+    verifyChatData(update=update, context=context)
+
+    # Fetching from the database the categories allready created if present.
+    chatLists = fetchCategories(update.effective_chat.id)
+
+    # Setting up the keyboard. Each row will contain a category.
+    # The last button is used to add a new category to the present ones.
+    keyboard = []
+    for chatList in chatLists:
+        keyboard.append(
+            [InlineKeyboardButton(text=chatList.category, callback_data=chatList.id)]
+        )
+    keyboard.append([InlineKeyboardButton(text="➕", callback_data="ADD_CATEGORY")])
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # Editing the bot message with the "select list" text and appending the keyboard
+    context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
+        text=getString(
+            "GENERAL_ShowCategories",
+            context.chat_data.get("lang"),
+        ),
+        reply_markup=reply_markup,
+    )
+
+    return FAVORITE_LIST_PICK_STATE
+
+
+def askFavoriteListName(update: Update, context: CallbackContext):
+    """Init the creation of a new list for the current chat asking the user the name."""
+    verifyChatData(update, context)
+
+    query = update.callback_query
+    query.answer()
+
+    # Asking the user the name of the category of which he wants to create the list (e.g. Pizza,Pasta,Sushi,...)
+    context.bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
+        text=getString(
+            "GENERAL_ChoseListName",
+            context.chat_data.get("lang"),
+        ),
+    )
+
+    return FAVORITE_LIST_CREATE_STATE
+
+
+def createList(update: Update, context: CallbackContext):
+    """Creates the list adding a record to the database."""
+    verifyChatData(update, context)
+
+    # Fetching the name chosen by the user and deleting his message
+    nameChosen = update.message.text
+    context.bot.delete_message(update.message.chat_id, update.message.message_id)
+
+    try:
+        # Trying to insert the list into the db
+        insertList(update.effective_chat.id, nameChosen)
+    except:
+        # If it fails an error messge is sent
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=getString(
+                "ERROR_UnableToCreateFavoriteList", context.chat_data.get("lang")
+            ),
+        )
+    finally:
+        # In both cases we get back to the default state showing back the lists already present.
+        return showCategories(update, context)
+
+
+def addToList(update: Update, context: CallbackContext):
+    """Adds the current restaurant to the list by updating the database."""
+    print("glielo buttiamo dentro")
 
 
 def showReviews(update: Update, context: CallbackContext) -> int:
@@ -726,11 +808,16 @@ def __formatInputText(textToFormat: str) -> str:
 
 def __fetchRestaurant(researchInfo: ResearchInfo, lang: str):
     googleKey = utils.ApiKey(utils.Service.GOOGLE_PLACES).value
+
+    print(f"{researchInfo.food} {researchInfo.cost} {researchInfo.location} {lang}")
+
     if researchInfo.opennow:
+        print("now open")
         googleResult = get(
             f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&opennow&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&rankby=distance&type=restaurant&key={googleKey}"
         )
     else:
+        print("also closed")
         googleResult = get(
             f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&rankby=distance&type=restaurant&key={googleKey}"
         )

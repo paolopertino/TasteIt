@@ -41,9 +41,9 @@ def setupTables() -> None:
     )
     cursor.execute(
         """CREATE TABLE IF NOT EXISTS list (
-            list_id TEXT PRIMARY KEY,
-            chat_id TEXT NOT NULL, 
+            list_id INTEGER PRIMARY KEY AUTOINCREMENT,
             category TEXT NOT NULL,
+            chat_id TEXT NOT NULL, 
             FOREIGN KEY (chat_id) REFERENCES chat (chat_id) ON DELETE NO ACTION ON UPDATE CASCADE)
         """
     )
@@ -59,7 +59,7 @@ def setupTables() -> None:
     )
     cursor.execute(
         """CREATE TABLE IF NOT EXISTS restaurant_for_list (
-            list_id TEXT, 
+            list_id INTEGER, 
             restaurant_id TEXT, 
             PRIMARY KEY(list_id, restaurant_id),
             FOREIGN KEY (list_id) REFERENCES list (list_id) ON DELETE CASCADE ON UPDATE CASCADE,

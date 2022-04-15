@@ -22,6 +22,7 @@
 ####################################################################################
 
 from data import dbConnect
+import utils
 
 
 def fetchLang(chatId: str) -> str:
@@ -38,5 +39,32 @@ def fetchLang(chatId: str) -> str:
         .fetchone()
     )
     connection.close()
+
+    return result
+
+
+def fetchCategories(chatId: str) -> list:
+    """Given a chat_id, it returns all the lists' categories already created.
+
+    Args:
+        chatId (str): the chat_id of which the lists' categories are required
+
+    Returns:
+        list: the list of categories of the chat_id provided if present
+    """
+    result = []
+
+    # Setting up the connection with the db and effectively fetching the categories if present.
+    connection = dbConnect()
+    dbResponse = (
+        connection.cursor()
+        .execute("""SELECT list_id, category FROM list WHERE chat_id = ?""", (chatId,))
+        .fetchall()
+    )
+    connection.close()
+
+    # Adding all the fetched categories to the result array and returning it.
+    for chatList in dbResponse:
+        result.append(utils.FavoriteList(chatList[0], chatList[1]))
 
     return result

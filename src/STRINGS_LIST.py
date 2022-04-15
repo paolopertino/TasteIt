@@ -152,6 +152,22 @@ GENERAL_STRINGS = {
                🍣 <b>TasteIt - Review</b> 🍝\n\n 💁🏼‍♂️ Author - <b>{}</b>\n🗓 Date - <b>{}</b>\n\n<i>{}</i>\n{} - {}/5
         """,
     },
+    "GENERAL_ShowCategories": {
+        "it": """
+               Le tue liste:
+        """,
+        "en": """
+               Your lists:
+        """,
+    },
+    "GENERAL_ChoseListName": {
+        "it": """
+               Che nome vuoi dare alla lista?
+        """,
+        "en": """
+               What name do you want to give the list?
+        """,
+    },
 }
 
 ERROR_STRINGS = {
@@ -225,6 +241,14 @@ ERROR_STRINGS = {
               """,
         "en": """
                  <i>Phone number not available.</i>
+              """,
+    },
+    "ERROR_UnableToCreateFavoriteList": {
+        "it": """
+                 <i>Impossibile creare la lista preferiti desiderata.</i>
+              """,
+        "en": """
+                 <i>Impossible to create the favorite list.</i>
               """,
     },
 }

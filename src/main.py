@@ -61,6 +61,9 @@ from bot_functionalities import (
     getMoreInfoOfCurrentRestaurant,
     addRestaurantToFavorites,
     showReviews,
+    askFavoriteListName,
+    createList,
+    addToList,
     endSearchConversation,
     SELECT_LANG,
     SELECT_STARTING_POSITION,
@@ -70,6 +73,8 @@ from bot_functionalities import (
     VIEW_SEARCH_RESULTS,
     DETAILED_INFO,
     VIEW_REVIEWS,
+    FAVORITE_LIST_PICK_STATE,
+    FAVORITE_LIST_CREATE_STATE,
 )
 from data import setupTables
 
@@ -203,6 +208,18 @@ def main():
                     CallbackQueryHandler(
                         endSearchConversation, pattern="^" + "end" + "$"
                     ),
+                ],
+                FAVORITE_LIST_PICK_STATE: [
+                    CallbackQueryHandler(
+                        askFavoriteListName, pattern="^" + "ADD_CATEGORY" + "$"
+                    ),
+                    CallbackQueryHandler(addToList),
+                ],
+                FAVORITE_LIST_CREATE_STATE: [
+                    MessageHandler(
+                        (Filters.text & ~Filters.command),
+                        createList,
+                    )
                 ],
             },
             fallbacks=[
