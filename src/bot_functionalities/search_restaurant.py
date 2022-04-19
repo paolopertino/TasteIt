@@ -34,7 +34,12 @@ from string import capwords
 from json import loads
 from sys import path
 
-from data import fetchCategories, insertList
+from data import (
+    fetchCategories,
+    insertList,
+    insertRestaurantInfos,
+    insertRestaurantIntoList,
+)
 from tools import verifyChatData
 import utils
 from utils.general_place import GeneralPlace
@@ -407,7 +412,6 @@ def showCurrentRestaurant(update: Update, context: CallbackContext) -> int:
     #   by clicking ➡️                 the user will move to the next restaurant of the list;
     #   by clicking GENERAL_MoreInfos  the user will be able to see detailed informations of the current restaurant;
     #   by clicking GENERAL_PollButton  GROUPS ONLY - a poll with the current restaurants is started
-    #   by clicking 📄+                the user can add the current restaurant to his favorites list;
     #   by clicking ❌                 the conversation will end.
     keyboard = (
         [
@@ -428,7 +432,6 @@ def showCurrentRestaurant(update: Update, context: CallbackContext) -> int:
                 ),
             ],
             [
-                InlineKeyboardButton("📄+", callback_data="ADD_TO_PREF"),
                 InlineKeyboardButton("❌", callback_data="end"),
             ],
         ]
@@ -448,7 +451,6 @@ def showCurrentRestaurant(update: Update, context: CallbackContext) -> int:
                 ),
             ],
             [
-                InlineKeyboardButton("📄+", callback_data="ADD_TO_PREF"),
                 InlineKeyboardButton("❌", callback_data="end"),
             ],
         ]
@@ -568,6 +570,12 @@ def getMoreInfoOfCurrentRestaurant(update: Update, context: CallbackContext) -> 
             InlineKeyboardButton(text="⭐️", callback_data="VIEW_REVIEWS"),
         ],
         [
+            InlineKeyboardButton(
+                getString("GENERAL_AddToFavorites", context.chat_data.get("lang")),
+                callback_data="ADD_TO_PREF",
+            ),
+        ],
+        [
             InlineKeyboardButton(text="↩️", callback_data="BACK_TO_LIST"),
             InlineKeyboardButton(text="❌", callback_data="end"),
         ],
@@ -604,9 +612,7 @@ def addRestaurantToFavorites(update: Update, context: CallbackContext):
 
     query = update.callback_query
     query.answer()
-    # TODO: add the current displayed restaurant to the favorites
-    #       (STEP 1) Handle the creation of a category list
-    #       (STEP 2) adding the restaurant to the selected list
+
     return showCategories(update, context)
 
 
@@ -614,7 +620,7 @@ def showCategories(update: Update, context: CallbackContext):
     """Shows the current available categories for the user or group"""
     verifyChatData(update=update, context=context)
 
-    # Fetching from the database the categories allready created if present.
+    # Fetching from the database the categories already created if present.
     chatLists = fetchCategories(update.effective_chat.id)
 
     # Setting up the keyboard. Each row will contain a category.
@@ -687,7 +693,34 @@ def createList(update: Update, context: CallbackContext):
 
 def addToList(update: Update, context: CallbackContext):
     """Adds the current restaurant to the list by updating the database."""
-    print("glielo buttiamo dentro")
+    verifyChatData(update, context)
+
+    query = update.callback_query
+    query.answer()
+
+    # Fetching the list id of the list we want to insert the restaurant in and the restaurant itself.
+    listId = update.callback_query.data
+    restaurantToInsert: Restaurant = context.chat_data.get("restaurants_list").current
+
+    # Inserting the restaurant in the database (if already present the insert command will be ignored internally)
+    insertRestaurantInfos(
+        restaurantToInsert.id,
+        restaurantToInsert.name,
+        restaurantToInsert.address,
+        restaurantToInsert.rating,
+        restaurantToInsert.price,
+        restaurantToInsert.timetable,
+    )
+
+    # Inserting the restaurant into the selected list.
+    insertRestaurantIntoList(listId, restaurantToInsert.id)
+
+    # Sending a confirmation message and displaying the datailed infos of the current restaurant again.
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=getString("GENERAL_RestaurantAddedToList", context.chat_data.get("lang")),
+    )
+    return showCurrentRestaurant(update, context)
 
 
 def showReviews(update: Update, context: CallbackContext) -> int:

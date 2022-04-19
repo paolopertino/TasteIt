@@ -168,6 +168,22 @@ GENERAL_STRINGS = {
                What name do you want to give the list?
         """,
     },
+    "GENERAL_RestaurantAddedToList": {
+        "it": """
+               Il ristorante è stato aggiunto con successo alla lista.
+        """,
+        "en": """
+               The restaurant has been added succesfully to the list.
+        """,
+    },
+    "GENERAL_AddToFavorites": {
+        "it": """
+               📄 Aggiungi ai preferiti
+        """,
+        "en": """
+               📄 Adds to favorites
+        """,
+    },
 }
 
 ERROR_STRINGS = {

@@ -52,3 +52,57 @@ def insertList(chatId: str, listName: str) -> None:
     )
     connection.commit()
     connection.close()
+
+
+def insertRestaurantInfos(
+    restaurantId: str,
+    restaurantName: str,
+    restaurantAddress: str,
+    restaurantRating: float,
+    restaurantPriceLvl: str,
+    restaurantTimetable: str,
+) -> None:
+    """Given some infos about a restaurant, the method stores them in the database.
+
+    The infos are stored only if the restaurant is not already present, otherwise they will get ignored.
+
+    Args:
+        restaurantId (str): the restaurant id provided by google.
+        restaurantName (str): the restaurant name.
+        restaurantAddress (str): the restaurant address.
+        restaurantRating (float): the restaurant total rating.
+        restaurantPriceLvl (str): the restaurant price level (from 0 'less expensive' to 4 'very expensive').
+        restaurantTimetable (str): the restaurant timetable.
+    """
+    connection = dbConnect()
+    cursor = connection.cursor()
+    cursor.execute(
+        "INSERT OR IGNORE INTO restaurant VALUES(?, ?, ?, ?, ?, ?)",
+        (
+            restaurantId,
+            restaurantName,
+            restaurantAddress,
+            restaurantRating,
+            restaurantPriceLvl,
+            restaurantTimetable,
+        ),
+    )
+    connection.commit()
+    connection.close()
+
+
+def insertRestaurantIntoList(listId: int, restaurantId: str) -> None:
+    """Insert a restaurant into a particular favorite list.
+
+    Args:
+        listId (int): the list id of the list in which the user wants to insert the restaurant.
+        restaurantId (str): the restaurant id of the restaurant the user wants to insert into a list.
+    """
+    connection = dbConnect()
+    cursor = connection.cursor()
+    cursor.execute(
+        "INSERT OR IGNORE INTO restaurant_for_list VALUES(?, ?)",
+        (listId, restaurantId),
+    )
+    connection.commit()
+    connection.close()

@@ -177,15 +177,15 @@ def main():
                         pattern="^" + "DISPLAY_MORE_INFO" + "$",
                     ),
                     CallbackQueryHandler(
-                        addRestaurantToFavorites, pattern="^" + "ADD_TO_PREF" + "$"
-                    ),
-                    CallbackQueryHandler(
                         endSearchConversation, pattern="^" + "end" + "$"
                     ),
                 ],
                 DETAILED_INFO: [
                     CallbackQueryHandler(
                         showReviews, pattern="^" + "VIEW_REVIEWS" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        addRestaurantToFavorites, pattern="^" + "ADD_TO_PREF" + "$"
                     ),
                     CallbackQueryHandler(
                         showCurrentRestaurant, pattern="^" + "BACK_TO_LIST" + "$"
