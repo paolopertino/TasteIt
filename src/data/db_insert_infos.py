@@ -58,9 +58,13 @@ def insertRestaurantInfos(
     restaurantId: str,
     restaurantName: str,
     restaurantAddress: str,
-    restaurantRating: float,
-    restaurantPriceLvl: str,
-    restaurantTimetable: str,
+    restaurantPhoneNumber: str = None,
+    restaurantRating: float = 0.0,
+    restaurantWebsite: str = "https://www.google.com/",
+    restaurantTotalRatingsNumber: int = 0,
+    restaurantPriceLvl: int = 0,
+    restaurantTimetable: str = None,
+    restaurantMapsLink: str = "https://www.google.com/maps",
 ) -> None:
     """Given some infos about a restaurant, the method stores them in the database.
 
@@ -70,21 +74,27 @@ def insertRestaurantInfos(
         restaurantId (str): the restaurant id provided by google.
         restaurantName (str): the restaurant name.
         restaurantAddress (str): the restaurant address.
+        restaurantPhoneNumber (str): the restaurant phone number.
         restaurantRating (float): the restaurant total rating.
-        restaurantPriceLvl (str): the restaurant price level (from 0 'less expensive' to 4 'very expensive').
+        restaurantWebsite (str): the restaurant website (if present, default https://www.google.com)
+        restaurantPriceLvl (int): the restaurant price level (from 0 'less expensive' to 4 'very expensive').
         restaurantTimetable (str): the restaurant timetable.
     """
     connection = dbConnect()
     cursor = connection.cursor()
     cursor.execute(
-        "INSERT OR IGNORE INTO restaurant VALUES(?, ?, ?, ?, ?, ?)",
+        "INSERT OR IGNORE INTO restaurant VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (
             restaurantId,
             restaurantName,
             restaurantAddress,
+            restaurantPhoneNumber,
             restaurantRating,
+            restaurantWebsite,
+            restaurantTotalRatingsNumber,
             restaurantPriceLvl,
             restaurantTimetable,
+            restaurantMapsLink,
         ),
     )
     connection.commit()

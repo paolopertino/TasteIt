@@ -138,10 +138,10 @@ GENERAL_STRINGS = {
     },
     "GENERAL_DetailedInfoOfRestaurant": {
         "it": """
-               🍣 <b>TasteIt - Dettaglio</b> 🍝\n\n🍴 Locale - <b>{}</b>\n📍Indirizzo - <b><a href='{}'>{}</a></b>\n ☎️ Telefono - <a href='tel:{}'>{}</a>\n{}\n{} recensioni totali.\n––––––––––––––––––\n\n🕙 Orario 🕟\n{}
+               🍣 <b>TasteIt - Dettaglio</b> 🍝\n\n🍴 Locale - <b>{}</b>\n📍Indirizzo - <b><a href='{}'>{}</a></b>\n ☎️ Telefono - <a href='tel:{}'>{}</a>\n💶 Prezzo - <b>{}</b>\n{}\n{} recensioni totali.\n––––––––––––––––––\n\n🕙 Orario 🕟\n{}
         """,
         "en": """
-               🍣 <b>TasteIt - Details</b> 🍝\n\n🍴 Restaurant - <b>{}</b>\n📍Address - <b><a href='{}'>{}</a></b>\n ☎️ Phone - <a href='tel:{}'>{}</a>\n{}\n{} total reviews.\n––––––––––––––––––\n\n🕙 Timetable 🕟\n{}
+               🍣 <b>TasteIt - Details</b> 🍝\n\n🍴 Restaurant - <b>{}</b>\n📍Address - <b><a href='{}'>{}</a></b>\n ☎️ Phone - <a href='tel:{}'>{}</a>\n💶 Price - <b>{}</b>\n{}\n{} total reviews.\n––––––––––––––––––\n\n🕙 Timetable 🕟\n{}
         """,
     },
     "GENERAL_ReviewContent": {
@@ -182,6 +182,22 @@ GENERAL_STRINGS = {
         """,
         "en": """
                📄 Adds to favorites
+        """,
+    },
+    "GENERAL_RemoveRestaurantFromList": {
+        "it": """
+               Rimuovi
+        """,
+        "en": """
+               Remove
+        """,
+    },
+    "GENERAL_DeleteList": {
+        "it": """
+               Elimina lista
+        """,
+        "en": """
+               Delete list
         """,
     },
 }
@@ -265,6 +281,22 @@ ERROR_STRINGS = {
               """,
         "en": """
                  <i>Impossible to create the favorite list.</i>
+              """,
+    },
+    "ERROR_NoListsAvailable": {
+        "it": """
+                 Non hai ancora creato alcuna lista. Cerca un ristorante e creane una.
+              """,
+        "en": """
+                 You haven't created a list yet. Start a restaurant research and create a new one.
+              """,
+    },
+    "ERROR_EmptyList": {
+        "it": """
+                 La lista selezionata è vuota.
+              """,
+        "en": """
+                 The selected list is empty.
               """,
     },
 }

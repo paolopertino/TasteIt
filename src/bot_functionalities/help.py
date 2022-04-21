@@ -35,9 +35,7 @@ path.append("..")
 def help(update: Update, context: CallbackContext):
     """Function triggered with the `/help` command
 
-    Args:
-        update (Update)\\
-        context (CallbackContext)
+    Send the user a message with all the possible commands.
     """
     verifyChatData(update=update, context=context)
 

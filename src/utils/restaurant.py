@@ -182,7 +182,7 @@ class RestaurantList(DoublyCircularLinkedList):
     def size(self):
         return len(self.__listOfRestaurants)
 
-    def add(self, newElement) -> None:
+    def add(self, newElement: Restaurant) -> None:
         """Add a restaurant to the list as last element.
 
         Args:

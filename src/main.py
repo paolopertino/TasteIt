@@ -22,6 +22,7 @@
 ####################################################################################
 
 from telegram.ext import (
+    CallbackContext,
     PicklePersistence,
     Updater,
     CommandHandler,
@@ -31,9 +32,10 @@ from telegram.ext import (
     Filters,
     Defaults,
 )
-
-from telegram import ParseMode
-
+from telegram import ParseMode, Update
+import traceback
+import html
+import json
 import logging
 
 from utils.api_key import ApiKey, Service
@@ -65,6 +67,15 @@ from bot_functionalities import (
     createList,
     addToList,
     endSearchConversation,
+    displayFavoritesLists,
+    pickedList,
+    showNextFavRestaurant,
+    showPrevFavRestaurant,
+    backToFavListsList,
+    showFavoriteRestaurantReviews,
+    removeRestaurantFromList,
+    deleteFavoriteList,
+    endFavoriteListsConversation,
     SELECT_LANG,
     SELECT_STARTING_POSITION,
     SELECT_FOOD,
@@ -75,10 +86,17 @@ from bot_functionalities import (
     VIEW_REVIEWS,
     FAVORITE_LIST_PICK_STATE,
     FAVORITE_LIST_CREATE_STATE,
+    FAV_LIST_DISPLAYED,
+    RESTAURANT_INFOS_DISPLAY,
 )
 from data import setupTables
 
 _DEVMODE = True
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+logger = logging.getLogger(__name__)
 
 # USEFUL GUIDELINES FOR ConversationHandlers
 # What do the per_* settings in ConversationHandler do?
@@ -88,12 +106,38 @@ _DEVMODE = True
 # Conversely, if per_user=True, but per_chat=False, its possible to start a conversation in one chat and continue with it in another.
 
 
-def main():
-    logging.basicConfig(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=logging.INFO,
+def error_handler(update: object, context: CallbackContext) -> None:
+    """Log the error and send a telegram message to notify the developer."""
+    # Log the error before we do anything else, so we can see it even if something breaks.
+    logger.error(msg="Exception while handling an update:", exc_info=context.error)
+
+    # traceback.format_exception returns the usual python message about an exception, but as a
+    # list of strings rather than a single string, so we have to join them together.
+    tb_list = traceback.format_exception(
+        None, context.error, context.error.__traceback__
+    )
+    tb_string = "".join(tb_list)
+
+    # Build the message with some markup and additional information about what happened.
+    update_str = update.to_dict() if isinstance(update, Update) else str(update)
+    message = (
+        f"An exception was raised while handling an update\n"
+        f"<pre>update = {html.escape(json.dumps(update_str, indent=2, ensure_ascii=False))}"
+        "</pre>\n\n"
+        f"<pre>context.chat_data = {html.escape(str(context.chat_data))}</pre>\n\n"
+        f"<pre>context.user_data = {html.escape(str(context.user_data))}</pre>\n\n"
+        f"<pre>{html.escape(tb_string)}</pre>"
     )
 
+    # Finally, send the message
+    context.bot.send_message(
+        chat_id=ApiKey(Service.TELEGRAM_DEVELOPER_CHAT_ID).value,
+        text=message,
+        parse_mode=ParseMode.HTML,
+    )
+
+
+def main():
     telegramKey = ApiKey(service=Service.TELEGRAM, devMode=_DEVMODE).value
 
     defaults = Defaults(parse_mode=ParseMode.HTML)
@@ -128,6 +172,7 @@ def main():
         ConversationHandler(
             entry_points=[CommandHandler("cerca", startSearch)],
             allow_reentry=False,
+            per_user=False,
             conversation_timeout=300,
             states={
                 SELECT_STARTING_POSITION: [
@@ -230,9 +275,61 @@ def main():
         group=1,
     )
 
+    # Favorite lists display feature
+    # If the conversation is inactive for more than 5 minutes, it will be automaticallt ended.
+    dispatcher.add_handler(
+        ConversationHandler(
+            entry_points=[CommandHandler("preferiti", displayFavoritesLists)],
+            allow_reentry=False,
+            per_user=False,
+            conversation_timeout=300,
+            states={
+                FAV_LIST_DISPLAYED: [
+                    CallbackQueryHandler(
+                        endFavoriteListsConversation, pattern="^" + "end" + "$"
+                    ),
+                    CallbackQueryHandler(pickedList),
+                ],
+                RESTAURANT_INFOS_DISPLAY: [
+                    CallbackQueryHandler(
+                        showNextFavRestaurant, pattern="^" + "NEXT_RESTAURANT" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        showPrevFavRestaurant, pattern="^" + "PREV_RESTAURANT" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        backToFavListsList, pattern="^" + "BACK_TO_LIST" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        showFavoriteRestaurantReviews,
+                        pattern="^" + "VIEW_REVIEWS" + "$",
+                    ),
+                    CallbackQueryHandler(
+                        removeRestaurantFromList,
+                        pattern="^" + "REMOVE_RESTAURANT_FROM_LIST" + "$",
+                    ),
+                    CallbackQueryHandler(
+                        deleteFavoriteList, pattern="^" + "DELETE_LIST" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        endFavoriteListsConversation, pattern="^" + "end" + "$"
+                    ),
+                ],
+            },
+            fallbacks=[
+                CommandHandler("annulla", endSearchConversation),
+                MessageHandler(Filters.command, notAvailableOption),
+            ],
+        ),
+        group=1,
+    )
+
     # Command Handlers
     dispatcher.add_handler(CommandHandler("start", start), group=1)
     dispatcher.add_handler(CommandHandler("help", help), group=1)
+
+    # The error handler
+    dispatcher.add_error_handler(error_handler)
 
     # Setting up database
     setupTables()

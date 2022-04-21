@@ -34,9 +34,7 @@ from tools.verify_bot_data import verifyChatData
 def start(update: Update, context: CallbackContext):
     """Function triggered with the `/start` command
 
-    Args:
-        update (Update)\\
-        context (CallbackContext)
+    Send a welcome message to the user with some greatings and useful informations.
     """
 
     verifyChatData(update=update, context=context)

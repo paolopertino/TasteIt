@@ -593,6 +593,7 @@ def getMoreInfoOfCurrentRestaurant(update: Update, context: CallbackContext) -> 
             currentPlace.address,
             currentPlace.phone,
             currentPlace.phone,
+            currentPlace.price,
             "⭐️" * round(currentPlace.rating)
             + " <b><i>{}</i></b>/5".format(str(currentPlace.rating)),
             "<i>{}</i>".format(str(currentPlace.ratingsnumber)),
@@ -707,9 +708,13 @@ def addToList(update: Update, context: CallbackContext):
         restaurantToInsert.id,
         restaurantToInsert.name,
         restaurantToInsert.address,
+        restaurantToInsert.phone,
         restaurantToInsert.rating,
-        restaurantToInsert.price,
+        restaurantToInsert.website,
+        restaurantToInsert.ratingsnumber,
+        len(restaurantToInsert.price) - 1,
         restaurantToInsert.timetable,
+        restaurantToInsert.maps,
     )
 
     # Inserting the restaurant into the selected list.
@@ -803,6 +808,13 @@ def endSearchConversation(update: Update, context: CallbackContext) -> int:
     Returns:
         int: end-code for ConversationHandler
     """
+    # This function can both be called by an InlineKeyboardButton and by a command, so we try to answer the callback_query
+    try:
+        query = update.callback_query
+        query.answer()
+    except:
+        pass
+
     if context.chat_data.get("search_message_id") != None:
         context.chat_data.pop("search_message_id")
     if context.chat_data.get("research_info") != None:

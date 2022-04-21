@@ -52,9 +52,13 @@ def setupTables() -> None:
             restaurant_id TEXT PRIMARY KEY, 
             name TEXT NOT NULL, 
             address TEXT NOT NULL, 
+            phone_number TEXT,
             rating REAL, 
-            price_lvl REAL, 
-            timetable TEXT)
+            website TEXT NOT NULL,
+            total_ratings INTEGER,
+            price_lvl INTEGER, 
+            timetable TEXT,
+            maps_link TEXT NOT NULL)
         """
     )
     cursor.execute(

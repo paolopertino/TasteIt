@@ -34,3 +34,17 @@ from .search_restaurant import (
     addToList,
     endSearchConversation,
 )
+from .favorites_lists import (
+    FAV_LIST_DISPLAYED,
+    RESTAURANT_INFOS_DISPLAY,
+    displayFavoritesLists,
+    pickedList,
+    showCurrentFavRestaurant,
+    showNextFavRestaurant,
+    showPrevFavRestaurant,
+    backToFavListsList,
+    showFavoriteRestaurantReviews,
+    removeRestaurantFromList,
+    deleteFavoriteList,
+    endFavoriteListsConversation,
+)
