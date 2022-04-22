@@ -69,6 +69,21 @@ class RatingsList(DoublyCircularLinkedList):
             self.__currentElement = newElement
         self.__listOfRatings.append(newElement)
 
+    def remove(self) -> None:
+        """Removes the current element to the list if present.
+
+        If there are more than just one element in the list, the new current element will be set with the next of the previous current one.
+        """
+        if self.__currentElement == None:
+            return
+        elif self.size == 1:
+            self.__listOfRatings.remove(self.current)
+            self.__currentElement = None
+        else:
+            indexOfRemovedElem = self.__listOfRatings.index(self.current)
+            self.__listOfRatings.remove(self.current)
+            self.__currentElement = self.__listOfRatings[indexOfRemovedElem % self.size]
+
     def setCurrentElementWithHisNext(self):
         self.__currentElement = self.__listOfRatings[
             (self.__listOfRatings.index(self.__currentElement) + 1) % self.size
@@ -97,3 +112,26 @@ class RatingsList(DoublyCircularLinkedList):
                 ]
 
         return copyOfSelf
+
+
+# TODO: rendere iterabile la lista
+# class BarIterator(object):
+#     def __init__(self, data_sequence):
+#         self.idx = 0
+#         self.data = data_sequence
+#     def __iter__(self):
+#         return self
+#     def __next__(self):
+#         self.idx += 1
+#         try:
+#             return self.data[self.idx-1]
+#         except IndexError:
+#             self.idx = 0
+#             raise StopIteration  # Done iterating.
+
+
+# class Bar(object):
+#     def __init__(self, data_sequence):
+#         self.data_sequence = data_sequence
+#     def __iter__(self):
+#         return BarIterator(self.data_sequence)

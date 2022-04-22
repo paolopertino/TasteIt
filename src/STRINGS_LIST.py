@@ -200,6 +200,14 @@ GENERAL_STRINGS = {
                Delete list
         """,
     },
+    "GENERAL_RestaurantRemovedFromFavList": {
+        "it": """
+               Il ristorante è stato rimosso dalla lista preferiti.
+        """,
+        "en": """
+               The restaurant has successfully been removed from the favorite list.
+        """,
+    },
 }
 
 ERROR_STRINGS = {
@@ -297,6 +305,14 @@ ERROR_STRINGS = {
               """,
         "en": """
                  The selected list is empty.
+              """,
+    },
+    "ERROR_NoReviewsAvailable": {
+        "it": """
+                 Non sono disponibili recensioni per il ristorante selezionato.
+              """,
+        "en": """
+                 There are no available reviews for the selected restaurant.
               """,
     },
 }

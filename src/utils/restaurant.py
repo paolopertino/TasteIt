@@ -192,6 +192,23 @@ class RestaurantList(DoublyCircularLinkedList):
             self.__currentElement = newElement
         self.__listOfRestaurants.append(newElement)
 
+    def remove(self) -> None:
+        """Removes the current element to the list if present.
+
+        If there are more than just one element in the list, the new current element will be set with the next of the previous current one.
+        """
+        if self.__currentElement == None:
+            return
+        elif self.size == 1:
+            self.__listOfRestaurants.remove(self.current)
+            self.__currentElement = None
+        else:
+            indexOfRemovedElem = self.__listOfRestaurants.index(self.current)
+            self.__listOfRestaurants.remove(self.current)
+            self.__currentElement = self.__listOfRestaurants[
+                indexOfRemovedElem % self.size
+            ]
+
     def setCurrentElementWithHisNext(self):
         """
         Set the next element of the list as current element.
@@ -229,3 +246,26 @@ class RestaurantList(DoublyCircularLinkedList):
                     len(copyOfSelf.__listOfRestaurants) - 1
                 ]
         return copyOfSelf
+
+
+# TODO: rendere iterabile la lista
+# class BarIterator(object):
+#     def __init__(self, data_sequence):
+#         self.idx = 0
+#         self.data = data_sequence
+#     def __iter__(self):
+#         return self
+#     def __next__(self):
+#         self.idx += 1
+#         try:
+#             return self.data[self.idx-1]
+#         except IndexError:
+#             self.idx = 0
+#             raise StopIteration  # Done iterating.
+
+
+# class Bar(object):
+#     def __init__(self, data_sequence):
+#         self.data_sequence = data_sequence
+#     def __iter__(self):
+#         return BarIterator(self.data_sequence)

@@ -83,7 +83,7 @@ def insertRestaurantInfos(
     connection = dbConnect()
     cursor = connection.cursor()
     cursor.execute(
-        "INSERT OR IGNORE INTO restaurant VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT OR REPLACE INTO restaurant VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (
             restaurantId,
             restaurantName,

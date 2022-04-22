@@ -7,4 +7,5 @@ from .db_insert_infos import (
     insertRestaurantInfos,
     insertRestaurantIntoList,
 )
+from .db_remove_infos import removeRestaurantFromListDb, removeFavoriteListFromDb
 from .db_update_infos import updateLang

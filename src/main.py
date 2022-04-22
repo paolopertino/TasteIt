@@ -69,10 +69,13 @@ from bot_functionalities import (
     endSearchConversation,
     displayFavoritesLists,
     pickedList,
+    showCurrentFavRestaurant,
     showNextFavRestaurant,
     showPrevFavRestaurant,
     backToFavListsList,
     showFavoriteRestaurantReviews,
+    showPrevReviewOfFavRestaurant,
+    showNextReviewOfFavRestaurant,
     removeRestaurantFromList,
     deleteFavoriteList,
     endFavoriteListsConversation,
@@ -88,6 +91,7 @@ from bot_functionalities import (
     FAVORITE_LIST_CREATE_STATE,
     FAV_LIST_DISPLAYED,
     RESTAURANT_INFOS_DISPLAY,
+    NAVIGATE_REVIEWS,
 )
 from data import setupTables
 
@@ -310,6 +314,21 @@ def main():
                     ),
                     CallbackQueryHandler(
                         deleteFavoriteList, pattern="^" + "DELETE_LIST" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        endFavoriteListsConversation, pattern="^" + "end" + "$"
+                    ),
+                ],
+                NAVIGATE_REVIEWS: [
+                    CallbackQueryHandler(
+                        showPrevReviewOfFavRestaurant, pattern="^" + "PREV_REVIEW" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        showNextReviewOfFavRestaurant, pattern="^" + "NEXT_REVIEW" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        showCurrentFavRestaurant,
+                        pattern="^" + "BACK_TO_DETAILED_INFO" + "$",
                     ),
                     CallbackQueryHandler(
                         endFavoriteListsConversation, pattern="^" + "end" + "$"

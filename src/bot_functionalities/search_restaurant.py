@@ -485,8 +485,11 @@ def showNextRestaurant(update: Update, context: CallbackContext) -> int:
     query.answer()
 
     # Fetching the list of restaurants and picking the next
-    context.chat_data.get("restaurants_list").setCurrentElementWithHisNext()
-    return showCurrentRestaurant(update, context)
+    # If there is only one element there is no reason to move from the current state
+    if context.chat_data.get("restaurants_list").size > 1:
+        context.chat_data.get("restaurants_list").setCurrentElementWithHisNext()
+
+        return showCurrentRestaurant(update, context)
 
 
 def showPrevRestaurant(update: Update, context: CallbackContext) -> int:
@@ -497,8 +500,11 @@ def showPrevRestaurant(update: Update, context: CallbackContext) -> int:
     query.answer()
 
     # Fetching the list of restaurants and picking the next
-    context.chat_data.get("restaurants_list").setCurrentElementWithHisPrev()
-    return showCurrentRestaurant(update, context)
+    # If there is only one element there is no reason to move from the current state
+    if context.chat_data.get("restaurants_list").size > 1:
+        context.chat_data.get("restaurants_list").setCurrentElementWithHisPrev()
+
+        return showCurrentRestaurant(update, context)
 
 
 def startPollWithCurrentRestaurant(update: Update, context: CallbackContext):
@@ -721,10 +727,17 @@ def addToList(update: Update, context: CallbackContext):
     insertRestaurantIntoList(listId, restaurantToInsert.id)
 
     # Sending a confirmation message and displaying the datailed infos of the current restaurant again.
-    context.bot.send_message(
+    context.bot.edit_message_text(
         chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
         text=getString("GENERAL_RestaurantAddedToList", context.chat_data.get("lang")),
     )
+
+    newId = context.bot.send_message(
+        chat_id=update.effective_chat.id, text="_"
+    ).message_id
+    context.chat_data.update({"search_message_id": newId})
+
     return showCurrentRestaurant(update, context)
 
 
@@ -777,29 +790,35 @@ def showReviews(update: Update, context: CallbackContext) -> int:
 
 
 def showPrevReview(update: Update, context: CallbackContext) -> int:
-    """Updates the current element of the reviews list with his previous, and shows that review."""
+    """Updates the current element of the reviews list with its previous, and shows that review."""
     verifyChatData(update=update, context=context)
 
     query = update.callback_query
     query.answer()
 
-    context.chat_data.get(
-        "restaurants_list"
-    ).current.reviews.setCurrentElementWithHisPrev()
-    return showReviews(update, context)
+    # If there is only one element there is no reason to move from the current state
+    if context.chat_data.get("restaurants_list").current.reviews.size > 1:
+        context.chat_data.get(
+            "restaurants_list"
+        ).current.reviews.setCurrentElementWithHisPrev()
+
+        return showReviews(update, context)
 
 
 def showNextReview(update: Update, context: CallbackContext) -> int:
-    """Updates the current element of the reviews list with his next, and shows that review."""
+    """Updates the current element of the reviews list with its next, and shows that review."""
     verifyChatData(update=update, context=context)
 
     query = update.callback_query
     query.answer()
 
-    context.chat_data.get(
-        "restaurants_list"
-    ).current.reviews.setCurrentElementWithHisNext()
-    return showReviews(update, context)
+    # If there is only one element there is no reason to move from the current state
+    if context.chat_data.get("restaurants_list").current.reviews.size > 1:
+        context.chat_data.get(
+            "restaurants_list"
+        ).current.reviews.setCurrentElementWithHisNext()
+
+        return showReviews(update, context)
 
 
 def endSearchConversation(update: Update, context: CallbackContext) -> int:

@@ -7,6 +7,10 @@ class DoublyCircularLinkedList(ABC):
         pass
 
     @abstractmethod
+    def remove(self):
+        pass
+
+    @abstractmethod
     def setCurrentElementWithHisNext(self):
         pass
 

@@ -37,6 +37,7 @@ from .search_restaurant import (
 from .favorites_lists import (
     FAV_LIST_DISPLAYED,
     RESTAURANT_INFOS_DISPLAY,
+    NAVIGATE_REVIEWS,
     displayFavoritesLists,
     pickedList,
     showCurrentFavRestaurant,
@@ -46,5 +47,7 @@ from .favorites_lists import (
     showFavoriteRestaurantReviews,
     removeRestaurantFromList,
     deleteFavoriteList,
+    showNextReviewOfFavRestaurant,
+    showPrevReviewOfFavRestaurant,
     endFavoriteListsConversation,
 )
