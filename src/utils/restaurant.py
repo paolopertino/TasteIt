@@ -247,25 +247,22 @@ class RestaurantList(DoublyCircularLinkedList):
                 ]
         return copyOfSelf
 
-
-# TODO: rendere iterabile la lista
-# class BarIterator(object):
-#     def __init__(self, data_sequence):
-#         self.idx = 0
-#         self.data = data_sequence
-#     def __iter__(self):
-#         return self
-#     def __next__(self):
-#         self.idx += 1
-#         try:
-#             return self.data[self.idx-1]
-#         except IndexError:
-#             self.idx = 0
-#             raise StopIteration  # Done iterating.
+    def __iter__(self):
+        return RestaurantsListIterator(self.__listOfRestaurants)
 
 
-# class Bar(object):
-#     def __init__(self, data_sequence):
-#         self.data_sequence = data_sequence
-#     def __iter__(self):
-#         return BarIterator(self.data_sequence)
+class RestaurantsListIterator:
+    def __init__(self, restaurantsArray):
+        self.i = 0
+        self.data = restaurantsArray
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.i += 1
+        try:
+            return self.data[self.i - 1]
+        except IndexError:
+            self.i = 0
+            raise StopIteration  # Done iterating.

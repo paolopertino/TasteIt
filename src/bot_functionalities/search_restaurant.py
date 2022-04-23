@@ -519,6 +519,7 @@ def startPollWithCurrentRestaurant(update: Update, context: CallbackContext):
 
     if restaurantsList.size < 2:
         # Cannot create a poll with less than 2 options
+        # TODO: do the trick with the message ids
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=getString(
