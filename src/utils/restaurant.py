@@ -1,5 +1,6 @@
 from utils.doubly_circular_linked_list import DoublyCircularLinkedList
 from utils.general_place import GeneralPlace
+from utils.list_iterator import ListIterator
 from utils.rating import RatingsList
 
 
@@ -49,75 +50,75 @@ class Restaurant(GeneralPlace):
         self.__hasAlreadyFetchedDetails = False
 
     @property
-    def id(self):
+    def id(self) -> str:
         return self.__restaurantId
 
     @property
-    def price(self):
+    def price(self) -> str:
         return "€" * (self.__priceLevel + 1)
 
     @property
-    def rating(self):
+    def rating(self) -> float:
         return self.__ratingValue
 
     @property
-    def ratingsnumber(self):
+    def ratingsnumber(self) -> int:
         return self.__totalRatings
 
     @property
-    def phone(self):
+    def phone(self) -> str:
         return self.__phoneNumber
 
     @phone.setter
-    def phone(self, phoneNumber: str):
+    def phone(self, phoneNumber: str) -> None:
         self.__phoneNumber = phoneNumber
 
     @property
-    def isdetailed(self):
+    def isdetailed(self) -> bool:
         return self.__hasAlreadyFetchedDetails
 
     @isdetailed.setter
-    def isdetailed(self, isDetailed: bool):
+    def isdetailed(self, isDetailed: bool) -> None:
         self.__hasAlreadyFetchedDetails = isDetailed
 
     @property
-    def maps(self):
+    def maps(self) -> str:
         return self.__mapsUrl
 
     @maps.setter
-    def maps(self, mapsUrl: str):
+    def maps(self, mapsUrl: str) -> None:
         self.__mapsUrl = mapsUrl
 
     @property
-    def reviews(self):
+    def reviews(self) -> RatingsList:
         return self.__ratings
 
     @reviews.setter
-    def reviews(self, reviews):
+    def reviews(self, reviews: RatingsList) -> None:
         self.__ratings = reviews
 
     @property
-    def website(self):
+    def website(self) -> None:
         return self.__website
 
     @website.setter
-    def website(self, placeWebsite):
+    def website(self, placeWebsite: str) -> None:
         self.__website = placeWebsite
 
     @property
-    def address(self):
+    def address(self) -> str:
         return self.__restaurantAddress
 
     @address.setter
-    def address(self, newAddress):
+    def address(self, newAddress) -> None:
         self.__restaurantAddress = newAddress
 
     @property
-    def timetable(self):
+    def timetable(self) -> str:
         return self.__timetable
 
     @timetable.setter
-    def timetable(self, timetable):
+    def timetable(self, timetable) -> None:
         self.__timetable = timetable
 
     def clone(self):
@@ -163,23 +164,23 @@ class RestaurantList(DoublyCircularLinkedList):
         self.__listOfRestaurants: list = []
 
     @property
-    def next(self):
+    def next(self) -> Restaurant:
         return self.__listOfRestaurants[
             (self.__listOfRestaurants.index(self.__currentElement) + 1) % self.size
         ]
 
     @property
-    def prev(self):
+    def prev(self) -> Restaurant:
         return self.__listOfRestaurants[
             (self.__listOfRestaurants.index(self.__currentElement) - 1) % self.size
         ]
 
     @property
-    def current(self):
+    def current(self) -> Restaurant:
         return self.__currentElement
 
     @property
-    def size(self):
+    def size(self) -> int:
         return len(self.__listOfRestaurants)
 
     def add(self, newElement: Restaurant) -> None:
@@ -209,7 +210,7 @@ class RestaurantList(DoublyCircularLinkedList):
                 indexOfRemovedElem % self.size
             ]
 
-    def setCurrentElementWithHisNext(self):
+    def setCurrentElementWithHisNext(self) -> None:
         """
         Set the next element of the list as current element.
 
@@ -219,7 +220,7 @@ class RestaurantList(DoublyCircularLinkedList):
             (self.__listOfRestaurants.index(self.__currentElement) + 1) % self.size
         ]
 
-    def setCurrentElementWithHisPrev(self):
+    def setCurrentElementWithHisPrev(self) -> None:
         """
         Set the previous element of the list as current element.
 
@@ -248,21 +249,4 @@ class RestaurantList(DoublyCircularLinkedList):
         return copyOfSelf
 
     def __iter__(self):
-        return RestaurantsListIterator(self.__listOfRestaurants)
-
-
-class RestaurantsListIterator:
-    def __init__(self, restaurantsArray):
-        self.i = 0
-        self.data = restaurantsArray
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        self.i += 1
-        try:
-            return self.data[self.i - 1]
-        except IndexError:
-            self.i = 0
-            raise StopIteration  # Done iterating.
+        return ListIterator(self.__listOfRestaurants)

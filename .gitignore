@@ -131,3 +131,10 @@ dmypy.json
 # Custom files
 googleExampleQuery.txt
 tasteit.db
+
+# TEXStudio
+_minted-tasteit_report/
+*.aux
+*.out
+*.synctex.gz
+*.toc

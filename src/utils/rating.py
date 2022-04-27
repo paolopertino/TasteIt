@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from utils.doubly_circular_linked_list import DoublyCircularLinkedList
+from utils.list_iterator import ListIterator
 
 
 class Rating:
@@ -114,21 +115,4 @@ class RatingsList(DoublyCircularLinkedList):
         return copyOfSelf
 
     def __iter__(self):
-        return RatingsListIterator(self.__listOfRatings)
-
-
-class RatingsListIterator:
-    def __init__(self, ratingsArray):
-        self.i = 0
-        self.data = ratingsArray
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        self.i += 1
-        try:
-            return self.data[self.i - 1]
-        except IndexError:
-            self.i = 0
-            raise StopIteration  # Done iterating.
+        return ListIterator(self.__listOfRatings)
