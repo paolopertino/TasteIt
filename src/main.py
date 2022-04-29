@@ -95,7 +95,7 @@ from bot_functionalities import (
 )
 from data import setupTables
 
-_DEVMODE = True
+_DEVMODE = False
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,

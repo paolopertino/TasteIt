@@ -21,7 +21,6 @@
 # THE SOFTWARE.                                                                    #
 ####################################################################################
 
-from numpy import size
 from telegram import (
     ReplyKeyboardMarkup,
     Update,
@@ -566,14 +565,14 @@ def getMoreInfoOfCurrentRestaurant(update: Update, context: CallbackContext) -> 
 
     # Creating the keyboard to attach to the display restaurants message:
     #   by clicking 🌐                 the user will open the restaurant's website if present, otherwise it links google.com;
-    #   by clicking 🗺                 the user will be redirected to google maps to start its navigation;
+    #   by clicking 📍                 the user will be redirected to google maps to start its navigation;
     #   by clicking ⭐️                 the user will be able to see all the restaurant's reviews;
     #   by clicking ↩️                 the user get back to the detailed informations message;
     #   by clicking ❌                 the conversation will end.
     keyboard = [
         [
             InlineKeyboardButton(text="🌐", url=f"{currentPlace.website}"),
-            InlineKeyboardButton(text="🗺", url=f"{currentPlace.maps}"),
+            InlineKeyboardButton(text="📍", url=f"{currentPlace.maps}"),
             InlineKeyboardButton(text="⭐️", callback_data="VIEW_REVIEWS"),
         ],
         [

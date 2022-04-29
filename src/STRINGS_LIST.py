@@ -90,10 +90,10 @@ GENERAL_STRINGS = {
     },
     "GENERAL_SearchRestaurantInfoRecap": {
         "it": """
-               ℹ️ <b>TasteIt - Info</b> ℹ️\nCibo 🍝 - <b>{}</b>\nRistorante aperto ora 🕧 - {}\nPrezzo massimo 💶 - <b>{}</b>\n\nVuoi modificare qualcosa?
+               ℹ️ <b>TasteIt - Info</b> ℹ️\n🍝 Cibo  - <b>{}</b>\n🕧 Ristorante aperto ora ? - {}\n💶 Prezzo massimo - <b>{}</b>\n\nVuoi modificare qualcosa?
               """,
         "en": """
-               ℹ️ <b>TasteIt - Info</b> ℹ️\nFood 🍝 - <b>{}</b>\nRestaurant open now 🕧 - {}\nMax price 💶 - <b>{}</b>\n\nDo you need to modify something?
+               ℹ️ <b>TasteIt - Info</b> ℹ️\n🍝 Food - <b>{}</b>\n🕧 Restaurant open now ? - {}\n💶 Max price - <b>{}</b>\n\nDo you want to modify something?
               """,
     },
     "GENERAL_FoodPreferenceReset": {
