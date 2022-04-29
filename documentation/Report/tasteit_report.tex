@@ -173,6 +173,55 @@
 	restaurant\_for\_list.list\_id $\rightarrow$ list.list\_id\\
 	restaurant\_for\_list.chat\_id $\rightarrow$ chat.chat\_id
 	
+	\subsection{Class Diagram}
+	\paragraph{}
+	Di seguito riportiamo inoltre un class diagram degli oggetti ausiliari creati ed utilizzati ai fini del progetto.\\
+	\begin{figure}[h]
+		\centering
+		\def\svgwidth{\columnwidth}
+		\resizebox{\linewidth}{!}{\input{{tasteit_class_diagram.pdf_tex}}}
+		\caption{TasteIt - Class Diagram}
+		\label{fig:class_diagram}
+	\end{figure}
+	\paragraph{}
+	Segue una breve descrizione del contenuto della Figura \ref{fig:class_diagram}:
+	\begin{itemize}
+		\item \textit{Service} enumerazione rappresentante i servizi per cui è disponibile una API key;
+		\item \textit{ApiKey} rappresenta la chiave stessa. Il metodo \textit{value} cerca la key del servizio specificato all'interno del file \textit{.env} o tra le variabili d'ambiente del sistema;
+		\item \textit{ResearchInfo} rappresenta le informazioni preliminari utili per effettuare una ricerca di un ristorante;
+		\item \textit{GeneralPlace} contiene le informazioni relative alla posizione di un determinato luogo;
+		\item \textit{DoublyCircularArrayList} classe astratta rappresentante una doppia lista circolare\cite{circularDoublyLinkedList} (differente dalla versione linked, in quanto i nodi non sono effettivamente linkati tra loro);
+		\item \textit{Restaurant} rappresenta un ristorante e tutte le sue informazioni (nome, latitudine, longitudine, 'costosità', valutazione media degli utenti, numero totale di recensioni, orario settimanale, indirizzo, sito web, link a google maps e numero di telefono);
+		\item \textit{Rating} rappresenta una recensione (autore, valutazione, contenuto e data);
+		\item \textit{RestaurantsList} implementazione di DoublyCircularArrayList rappresentante una lista di ristoranti;
+		\item \textit{RatingsList} implementazione di DoublyCircularArrayList rappresentante una lista di recensioni;
+		\item \textit{ListIterator} iteratore per le liste sopra descritte, il quale le rende iterabili da inizio a fine;
+		\item \textit{FavoriteList} rappresenta una lista preferiti (id, categoria e ristoranti in essa contenuti);
+	\end{itemize}
+
+	\subsection{Conversazioni - Macchine a stati}
+	\paragraph{}
+	In questa sezione verranno presentate le macchine a stati schematizzanti le conversazioni offerte dal bot e gli eventi che scatenano i cambiamenti di stato.
+	\subsubsection{Modifica della lingua}
+	\paragraph{}
+	La conversazione più semplice: in risposta al comando \textit{/lang} viene invocata la funzione \textit{setLanguage()} che presenta all'utente il messaggio con la tastiera per scegliere la lingua da utilizzare.\\
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.7]{TasteIt_Lang_StateMachine.png}
+		\caption{/lang - State Machine}
+		\label{fig:LangStateMachine}
+	\end{figure}
+	
+	\newpage
+	\subsubsection{Ricerca ristorante}
+	\paragraph{}
+	Risponde alla richiesta effettuata con il comando \textit{/cerca} e gestisce l'intera conversazione di ricerca dei ristoranti e visualizzazione dei risultati.\\
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{TasteIt_Cerca_StateMachine.png}
+	\caption{/cerca - State Machine}
+	\label{fig:CercaStateMachine}
+	\end{figure}
 	
 	% Strumenti usati
 	\newpage
@@ -202,6 +251,9 @@
 		
 		\bibitem{places_api_key_registration}
 		\href{https://developers.google.com/maps/documentation/places/web-service/get-api-key}{Google Cloud Platform - Places API Key}
+		
+		\bibitem{circularDoublyLinkedList}
+		\href{https://pythonwife.com/circular-doubly-linked-list-in-python/#:~:text=A%20circular%20doubly%20linked%20list,tail%20node%20and%20vice%20versa.}{Circular Doubly Linked List}
 		
 	\end{thebibliography} 
 \end{document}         

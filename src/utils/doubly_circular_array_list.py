@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod, abstractproperty
 
 
-class DoublyCircularLinkedList(ABC):
+class DoublyCircularArrayList(ABC):
     @abstractmethod
     def add(self, newElement):
         pass

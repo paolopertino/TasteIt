@@ -70,7 +70,7 @@ class ApiKey:
         self.isDeveloperKey = devMode
 
     @property
-    def value(self):
+    def value(self) -> str:
         """The key value
 
         Raises:

@@ -1,4 +1,4 @@
-from utils.doubly_circular_linked_list import DoublyCircularLinkedList
+from utils.doubly_circular_array_list import DoublyCircularArrayList
 from utils.general_place import GeneralPlace
 from utils.list_iterator import ListIterator
 from utils.rating import RatingsList
@@ -148,7 +148,7 @@ class Restaurant(GeneralPlace):
         return copyOfSelf
 
 
-class RestaurantList(DoublyCircularLinkedList):
+class RestaurantList(DoublyCircularArrayList):
     """A list of restaurants with doubly circular linked list features.
 
     Attributes

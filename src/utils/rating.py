@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from utils.doubly_circular_linked_list import DoublyCircularLinkedList
+from utils.doubly_circular_array_list import DoublyCircularArrayList
 from utils.list_iterator import ListIterator
 
 
@@ -14,19 +14,19 @@ class Rating:
         self.__reviewDate = datetime.fromtimestamp(timestamp).strftime("%d/%m/%Y")
 
     @property
-    def author(self):
+    def author(self) -> str:
         return self.__authorName
 
     @property
-    def rating(self):
+    def rating(self) -> int:
         return self.__ratingVal
 
     @property
-    def content(self):
+    def content(self) -> str:
         return self.__reviewText
 
     @property
-    def date(self):
+    def date(self) -> str:
         return self.__reviewDate
 
     def clone(self):
@@ -40,29 +40,29 @@ class Rating:
         return copyOfSelf
 
 
-class RatingsList(DoublyCircularLinkedList):
+class RatingsList(DoublyCircularArrayList):
     def __init__(self):
         self.__currentElement: Rating = None
         self.__listOfRatings: list = []
 
     @property
-    def next(self):
+    def next(self) -> Rating:
         return self.__listOfRatings[
             (self.__listOfRatings.index(self.__currentElement) + 1) % self.size
         ]
 
     @property
-    def prev(self):
+    def prev(self) -> Rating:
         return self.__listOfRatings[
             (self.__listOfRatings.index(self.__currentElement) - 1) % self.size
         ]
 
     @property
-    def current(self):
+    def current(self) -> Rating:
         return self.__currentElement
 
     @property
-    def size(self):
+    def size(self) -> int:
         return len(self.__listOfRatings)
 
     def add(self, newElement) -> None:
@@ -85,12 +85,12 @@ class RatingsList(DoublyCircularLinkedList):
             self.__listOfRatings.remove(self.current)
             self.__currentElement = self.__listOfRatings[indexOfRemovedElem % self.size]
 
-    def setCurrentElementWithHisNext(self):
+    def setCurrentElementWithHisNext(self) -> None:
         self.__currentElement = self.__listOfRatings[
             (self.__listOfRatings.index(self.__currentElement) + 1) % self.size
         ]
 
-    def setCurrentElementWithHisPrev(self):
+    def setCurrentElementWithHisPrev(self) -> None:
         self.__currentElement = self.__listOfRatings[
             (self.__listOfRatings.index(self.__currentElement) - 1) % self.size
         ]
