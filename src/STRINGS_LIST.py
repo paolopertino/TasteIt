@@ -181,7 +181,7 @@ GENERAL_STRINGS = {
                📄 Aggiungi ai preferiti
         """,
         "en": """
-               📄 Adds to favorites
+               📄 Add to favorites
         """,
     },
     "GENERAL_RemoveRestaurantFromList": {
