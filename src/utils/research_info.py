@@ -14,11 +14,14 @@ class ResearchInfo:
         defines if you want fetch both closed and open restaurant at the time of the research or not (otherwise only open restaurants will be fetched)
     :attr:`__specifiedFood` : str
         desired food chosen by the user
+    :attr:`__withinWalkingDistance` : int
+        indicates whether the restaurant must be within the walking distance or not
     """
 
     def __init__(self):
         self.__startingPlace: GeneralPlace = None
         self.__maxCost: int = 3
+        self.__withinWalkingDistance: bool = True
         self.__openNow: bool = False
         self.__specifiedFood: str = None
 
@@ -61,3 +64,11 @@ class ResearchInfo:
     @food.setter
     def food(self, newFood: str) -> None:
         self.__specifiedFood = newFood
+
+    @property
+    def walkingdistance(self) -> bool:
+        return self.__withinWalkingDistance
+
+    @walkingdistance.setter
+    def walkingdistance(self, walkingdistance: bool) -> None:
+        self.__withinWalkingDistance = walkingdistance

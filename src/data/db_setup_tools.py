@@ -36,7 +36,9 @@ def setupTables() -> None:
     cursor.execute(
         """CREATE TABLE IF NOT EXISTS chat (
             chat_id TEXT PRIMARY KEY,
-            lang TEXT NOT NULL)
+            lang TEXT NOT NULL,
+            preferred_distance_on_foot INTEGER NOT NULL,
+            preferred_distance_by_car INTEGER NOT NULL)
         """
     )
     cursor.execute(

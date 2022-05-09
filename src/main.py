@@ -54,6 +54,7 @@ from bot_functionalities import (
     priceChanged,
     changePrice,
     searchRestaurant,
+    changeDistancePreference,
     showCurrentRestaurant,
     showNextRestaurant,
     showPrevRestaurant,
@@ -79,6 +80,11 @@ from bot_functionalities import (
     removeRestaurantFromList,
     deleteFavoriteList,
     endFavoriteListsConversation,
+    modifySettings,
+    modifyDistance,
+    onWalkDistanceUpdate,
+    onCarDistanceUpdate,
+    endSettingsConversation,
     SELECT_LANG,
     SELECT_STARTING_POSITION,
     SELECT_FOOD,
@@ -92,6 +98,9 @@ from bot_functionalities import (
     FAV_LIST_DISPLAYED,
     RESTAURANT_INFOS_DISPLAY,
     NAVIGATE_REVIEWS,
+    CHOSE_SETTING_TO_CHANGE,
+    CHANGE_WALK_DISTANCE,
+    CHANGE_CAR_DISTANCE,
 )
 from data import setupTables
 
@@ -170,6 +179,40 @@ def main():
         group=1,
     )
 
+    # Settings feature
+    dispatcher.add_handler(
+        ConversationHandler(
+            entry_points=[CommandHandler("settings", modifySettings)],
+            allow_reentry=False,
+            per_user=True,
+            per_chat=True,
+            states={
+                CHOSE_SETTING_TO_CHANGE: [
+                    CallbackQueryHandler(
+                        modifyDistance, pattern="^" + "MODIFY_WALK_DISTANCE" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        modifyDistance, pattern="^" + "MODIFY_CAR_DISTANCE" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        endSettingsConversation, pattern="^" + "end" + "$"
+                    ),
+                ],
+                CHANGE_WALK_DISTANCE: [
+                    MessageHandler((Filters.text), onWalkDistanceUpdate)
+                ],
+                CHANGE_CAR_DISTANCE: [
+                    MessageHandler((Filters.text), onCarDistanceUpdate)
+                ],
+            },
+            fallbacks=[
+                CommandHandler("annulla", endSettingsConversation),
+                MessageHandler(Filters.command, notAvailableOption),
+            ],
+        ),
+        group=1,
+    )
+
     # Search place feature
     # If the conversation is inactive for more than 5 minutes, it will be automaticallt ended.
     dispatcher.add_handler(
@@ -209,6 +252,9 @@ def main():
                     ),
                     CallbackQueryHandler(
                         endSearchConversation, pattern="^" + "end" + "$"
+                    ),
+                    CallbackQueryHandler(
+                        changeDistancePreference, pattern="^" + "CHANGE_DISTANCE" + "$"
                     ),
                 ],
                 VIEW_SEARCH_RESULTS: [

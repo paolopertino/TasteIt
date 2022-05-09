@@ -20,6 +20,7 @@ from .search_restaurant import (
     changePrice,
     priceChanged,
     searchRestaurant,
+    changeDistancePreference,
     showCurrentRestaurant,
     showNextRestaurant,
     showPrevRestaurant,
@@ -50,4 +51,14 @@ from .favorites_lists import (
     showNextReviewOfFavRestaurant,
     showPrevReviewOfFavRestaurant,
     endFavoriteListsConversation,
+)
+from .change_settings import (
+    CHOSE_SETTING_TO_CHANGE,
+    CHANGE_WALK_DISTANCE,
+    CHANGE_CAR_DISTANCE,
+    modifySettings,
+    modifyDistance,
+    onWalkDistanceUpdate,
+    onCarDistanceUpdate,
+    endSettingsConversation,
 )

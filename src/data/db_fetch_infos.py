@@ -44,6 +44,40 @@ def fetchLang(chatId: str) -> str:
     return result
 
 
+def fetchResearchRadius(chatId: str, reachableByFoot: bool) -> tuple:
+    """Given a chat id and a distance type, returns the user distance preference.
+
+    Args:
+        chatId (str) - the chat_id of which the language is required
+        reachableByFoot (bool) - true if the preferred_distance_on_foot param has to be fetched, otherwise false if the user wants to fetch preferred_distance_by_car
+
+    Returns:
+        int - the user preference in terms of distance from the restaurant
+    """
+    connection = dbConnect()
+    if reachableByFoot:
+        result = (
+            connection.cursor()
+            .execute(
+                """SELECT preferred_distance_on_foot FROM chat WHERE chat_id = ?""",
+                (chatId,),
+            )
+            .fetchone()
+        )
+    else:
+        result = (
+            connection.cursor()
+            .execute(
+                """SELECT preferred_distance_by_car FROM chat WHERE chat_id = ?""",
+                (chatId,),
+            )
+            .fetchone()
+        )
+    connection.close()
+
+    return result
+
+
 def fetchCategories(chatId: str) -> list:
     """Given a chat_id, it returns all the lists' categories already created.
 

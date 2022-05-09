@@ -29,15 +29,15 @@ GENERAL_STRINGS = {
                  Ciao, sono <b><i>TasteIT</i></b> 🍣🍝, ti aiuterò nella ricerca del locale perfetto in cui mangiare😋.\n\nDigita il comando /help per avere una completa panoramica delle funzionalità offerte.
               """,
         "en": """
-                 Hi, I am <b><i>TasteIT*</i></b> 🍣🍝, and I will help you to search for the perfect restaurant to have a meal😋.\n\nTry the /help command for having a complete overview of my functionalities.
+                 Hi, I am <b><i>TasteIT</i></b> 🍣🍝, and I will help you to search for the perfect restaurant to have a meal😋.\n\nTry the /help command for having a complete overview of my functionalities.
               """,
     },
     "GENERAL_HelpString": {
         "it": """
-                 🔧 Comandi generali 🔧\n/start ~ Avvia il bot.\n/help ~ Visualizza la lista dei comandi disponibili.\n/lang ~ Imposta la lingua del bot.\n\n🍽 Comandi Ricerca Ristoranti 🍽\n/cerca ~ Inizia la ricerca di un ristorante.\n
+                 🔧 Comandi generali 🔧\n/start ~ Avvia il bot.\n/help ~ Visualizza la lista dei comandi disponibili.\n/lang ~ Imposta la lingua del bot.\n/settings ~ Modifica i parametri relativi alla distanza di ricerca\n\n🍽 Comandi Ricerca Ristoranti 🍽\n/cerca ~ Inizia la ricerca di un ristorante.\n
               """,
         "en": """
-                 🔧 General commands 🔧\n/start ~ Starts the bot.\n/help ~ Shows all available commands.\n/lang ~ Change the bot language.\n\n🍽 Restaurant Search Commands 🍽\n/cerca ~ Starts a restaurant search.\n
+                 🔧 General commands 🔧\n/start ~ Starts the bot.\n/help ~ Shows all available commands.\n/lang ~ Change the bot language.\n/settings ~ Change the search distance parameters\n\n🍽 Restaurant Search Commands 🍽\n/cerca ~ Starts a restaurant search.\n
               """,
     },
     "GENERAL_ChooseLanguageString": {
@@ -90,10 +90,10 @@ GENERAL_STRINGS = {
     },
     "GENERAL_SearchRestaurantInfoRecap": {
         "it": """
-               ℹ️ <b>TasteIt - Info</b> ℹ️\n🍝 Cibo  - <b>{}</b>\n🕧 Ristorante aperto ora ? - {}\n💶 Prezzo massimo - <b>{}</b>\n\nVuoi modificare qualcosa?
+               ℹ️ <b>TasteIt - Info</b> ℹ️\n🍝 Cibo  - <b>{}</b>\n🕧 Ristorante aperto ora ? - {}\n{}\n💶 Prezzo massimo - <b>{}</b>\n\nVuoi modificare qualcosa?
               """,
         "en": """
-               ℹ️ <b>TasteIt - Info</b> ℹ️\n🍝 Food - <b>{}</b>\n🕧 Restaurant open now ? - {}\n💶 Max price - <b>{}</b>\n\nDo you want to modify something?
+               ℹ️ <b>TasteIt - Info</b> ℹ️\n🍝 Food - <b>{}</b>\n🕧 Restaurant open now ? - {}\n{}\n💶 Max price - <b>{}</b>\n\nDo you want to modify something?
               """,
     },
     "GENERAL_FoodPreferenceReset": {
@@ -208,6 +208,46 @@ GENERAL_STRINGS = {
                The restaurant has successfully been removed from the favorite list.
         """,
     },
+    "GENERAL_ReachableOnFoot": {
+        "it": """🚶‍♂️ Raggiungerò il ristorante a piedi (max <b>{}</b> km).""",
+        "en": """🚶‍♂️ I'll reach the restaurant on foot (max <b>{}</b> km).""",
+    },
+    "GENERAL_ReachableByCar": {
+        "it": """🚙 Raggiungerò il ristorante in macchina (max {} km).""",
+        "en": """🚙 I'll reach the restaurant by car (max {} km).""",
+    },
+    "GENERAL_ChangeSettingsIntro": {
+        "it": """
+               ⚙️ TasteIt Settings ⚙️\n\nValori attuali:\n\t 🚶‍♂️ - <b>{}</b> metri\n\t 🚙 - <b>{}</b> metri\n\nQuale parametro vuoi cambiare?
+        """,
+        "en": """
+               ⚙️ TasteIt Settings ⚙️\n\nCurrent values:\n\t 🚶‍♂️ - <b>{}</b> meters\n\t 🚙 - <b>{}</b> meters\n\nWhich parameter do you want to change?
+        """,
+    },
+    "GENERAL_ReachableOnFootSet": {
+        "it": """🚶‍♂️ Distanza max a piedi""",
+        "en": """🚶‍♂️ Max walking distance""",
+    },
+    "GENERAL_ReachableByCarSet": {
+        "it": """🚙 Distanza max in macchina""",
+        "en": """🚙 Max distance with car""",
+    },
+    "GENERAL_ChangeDistance": {
+        "it": """
+               Inserisci una nuova distanza massima in metri (Valori consentiti fino a 50'000).
+        """,
+        "en": """
+               Enter a new maximum distance in meters (Values allowed up to 50'000).
+        """,
+    },
+    "GENERAL_ParamSuccessfullyChanged": {
+        "it": """
+               ✅ Il nuovo parametro è stato salvato con successo.
+        """,
+        "en": """
+               ✅ The new parameter has been successfully saved.
+        """,
+    },
 }
 
 ERROR_STRINGS = {
@@ -313,6 +353,14 @@ ERROR_STRINGS = {
               """,
         "en": """
                  There are no available reviews for the selected restaurant.
+              """,
+    },
+    "ERROR_InvalidDistanceParameter": {
+        "it": """
+                 La distanza inserita non è valida.
+              """,
+        "en": """
+                 The selected distance is not valid.
               """,
     },
 }

@@ -32,15 +32,18 @@ from requests import get
 from string import capwords
 from json import loads
 from sys import path
+from geopy.distance import geodesic
 
 from data import (
     fetchCategories,
     insertList,
     insertRestaurantInfos,
     insertRestaurantIntoList,
+    fetchResearchRadius,
 )
 from tools import verifyChatData
 import utils
+from utils import research_info
 from utils.general_place import GeneralPlace
 from utils.rating import Rating
 from utils.research_info import ResearchInfo
@@ -65,7 +68,7 @@ path.append("..")
 
 
 def startSearch(update: Update, context: CallbackContext) -> int:
-    """Send message on `/cerca`."""
+    """Send a message on `/cerca`."""
     verifyChatData(update=update, context=context)
 
     searchMessage = update.message.reply_text(
@@ -203,7 +206,7 @@ def showRecapMessage(update: Update, context: CallbackContext):
     """Update the search message with recap informations."""
     verifyChatData(update=update, context=context)
 
-    searchInfo = context.chat_data.get("research_info")
+    searchInfo: ResearchInfo = context.chat_data.get("research_info")
 
     # Creating the keyboard to attach to the recap message:
     #   by clicking 🍝 the user will be able to chose the food again;
@@ -211,11 +214,16 @@ def showRecapMessage(update: Update, context: CallbackContext):
     #   by clicking 💶 the user will be able to set his max price preference (from 1 to 5 according to his expensiveness preferences);
     #   by clicking 🔎 the restaurant research will actually begin;
     #   by clicking ❌ the conversation will end.
+
     keyboard = [
         [
             InlineKeyboardButton("🍝", callback_data="CHANGE_FOOD"),
             InlineKeyboardButton("🕧", callback_data="CHANGE_TIME"),
             InlineKeyboardButton("💶", callback_data="CHANGE_PRICE"),
+            InlineKeyboardButton(
+                "🚙" if searchInfo.walkingdistance == True else "🚶‍♂️",
+                callback_data="CHANGE_DISTANCE",
+            ),
         ],
         [
             InlineKeyboardButton("🔎", callback_data="SEARCH"),
@@ -232,12 +240,47 @@ def showRecapMessage(update: Update, context: CallbackContext):
             context.chat_data.get("lang"),
             searchInfo.food,
             "✅" if searchInfo.opennow == True else "❌",
+            getString(
+                "GENERAL_ReachableOnFoot",
+                context.chat_data.get("lang"),
+                round(
+                    float(
+                        fetchResearchRadius(update.effective_chat.id, True)[0] / 1000
+                    ),
+                    2,
+                ),
+            )
+            if searchInfo.walkingdistance == True
+            else getString(
+                "GENERAL_ReachableByCar",
+                context.chat_data.get("lang"),
+                round(
+                    float(
+                        fetchResearchRadius(update.effective_chat.id, False)[0] / 1000
+                    ),
+                    2,
+                ),
+            ),
             "€" * searchInfo.cost,
         ),
         reply_markup=reply_markup,
     )
 
     return CHECK_SEARCH_INFO
+
+
+def changeDistancePreference(update: Update, context: CallbackContext) -> int:
+    """Update the way the user wants to reach the restaurant."""
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    # Switching between "by walking" and "by car"
+    searchInfo: ResearchInfo = context.chat_data.get("research_info")
+    searchInfo.walkingdistance = not (searchInfo.walkingdistance)
+
+    return showRecapMessage(update, context)
 
 
 def changeFood(update: Update, context: CallbackContext) -> int:
@@ -309,6 +352,27 @@ def changePrice(update: Update, context: CallbackContext) -> int:
             context.chat_data.get("lang"),
             searchInfo.food,
             "✅" if searchInfo.opennow == True else "❌",
+            getString(
+                "GENERAL_ReachableOnFoot",
+                context.chat_data.get("lang"),
+                round(
+                    float(
+                        fetchResearchRadius(update.effective_chat.id, True)[0] / 1000
+                    ),
+                    2,
+                ),
+            )
+            if searchInfo.walkingdistance == True
+            else getString(
+                "GENERAL_ReachableByCar",
+                context.chat_data.get("lang"),
+                round(
+                    float(
+                        fetchResearchRadius(update.effective_chat.id, False)[0] / 1000
+                    ),
+                    2,
+                ),
+            ),
             "€" * searchInfo.cost,
         ),
         reply_markup=reply_markup,
@@ -340,11 +404,13 @@ def searchRestaurant(update: Update, context: CallbackContext) -> int:
     query.answer()
 
     # Getting the complete research infos. They will be used to perform the restaurants research.
-    searchInfo = context.chat_data.get("research_info")
+    searchInfo: ResearchInfo = context.chat_data.get("research_info")
 
     try:
         # Fetch the restaurants.
-        placesFound = __fetchRestaurant(searchInfo, context.chat_data.get("lang"))
+        placesFound = __fetchRestaurant(
+            update.effective_chat.id, searchInfo, context.chat_data.get("lang")
+        )
     except NoPlaceFoundException:
         # Thrown when no restaurants were found with the specfied research informations.
         # In this case the recap will pop back.
@@ -381,18 +447,61 @@ def searchRestaurant(update: Update, context: CallbackContext) -> int:
     else:
         # If everything has gone fine, a restaurants' list is compiled and stored in chat_data
         fetchedRestaurants = RestaurantList()
+        # outOfRangeRestaurants: list = []
         for result in placesFound.get("results"):
-            fetchedRestaurants.add(
-                Restaurant(
-                    result.get("name"),
-                    result.get("geometry").get("location").get("lat"),
-                    result.get("geometry").get("location").get("lng"),
-                    result.get("place_id"),
-                    result.get("price_level"),
-                    result.get("rating"),
-                    result.get("user_ratings_total"),
+            if (
+                geodesic(
+                    (
+                        result.get("geometry").get("location").get("lat"),
+                        result.get("geometry").get("location").get("lng"),
+                    ),
+                    (searchInfo.latitude, searchInfo.longitude),
+                ).meters
+                <= fetchResearchRadius(
+                    update.effective_chat.id, searchInfo.walkingdistance
+                )[0]
+            ):
+                fetchedRestaurants.add(
+                    Restaurant(
+                        result.get("name"),
+                        result.get("geometry").get("location").get("lat"),
+                        result.get("geometry").get("location").get("lng"),
+                        result.get("place_id"),
+                        result.get("price_level"),
+                        result.get("rating"),
+                        result.get("user_ratings_total"),
+                    )
                 )
-            )
+        #     else:
+        #         outOfRangeRestaurants.append(
+        #             Restaurant(
+        #                 result.get("name"),
+        #                 result.get("geometry").get("location").get("lat"),
+        #                 result.get("geometry").get("location").get("lng"),
+        #                 result.get("place_id"),
+        #                 result.get("price_level"),
+        #                 result.get("rating"),
+        #                 result.get("user_ratings_total"),
+        #             )
+        #         )
+        # # Adding the out of range restaurants in the back of the list.
+        # for outOfRangeRestaurant in outOfRangeRestaurants:
+        #     fetchedRestaurants.add(outOfRangeRestaurant)
+
+        # If the list become empty after the distance filtering we populate it with the other values.
+        if fetchedRestaurants.size == 0:
+            for result in placesFound.get("results"):
+                fetchedRestaurants.add(
+                    Restaurant(
+                        result.get("name"),
+                        result.get("geometry").get("location").get("lat"),
+                        result.get("geometry").get("location").get("lng"),
+                        result.get("place_id"),
+                        result.get("price_level"),
+                        result.get("rating"),
+                        result.get("user_ratings_total"),
+                    )
+                )
 
         context.chat_data.update({"restaurants_list": fetchedRestaurants})
 
@@ -518,13 +627,17 @@ def startPollWithCurrentRestaurant(update: Update, context: CallbackContext):
 
     if restaurantsList.size < 2:
         # Cannot create a poll with less than 2 options
-        # TODO: do the trick with the message ids
-        context.bot.send_message(
+        context.bot.edit_message_text(
             chat_id=update.effective_chat.id,
+            message_id=context.chat_data.get("search_message_id"),
             text=getString(
                 "ERROR_InsufficientPollOptions", context.chat_data.get("lang")
             ),
         )
+        newMessageId = context.bot.send_message(
+            chat_id=update.effective_chat.id, text="_"
+        ).message_id
+        context.chat_data.update({"search_message_id": newMessageId})
 
         return showCurrentRestaurant(update, context)
     elif restaurantsList.size > 10:
@@ -549,6 +662,15 @@ def startPollWithCurrentRestaurant(update: Update, context: CallbackContext):
         allows_multiple_answers=False,
         open_period=60,
     )
+    context.bot.delete_message(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("search_message_id"),
+    )
+    newMessageId = context.bot.send_message(
+        chat_id=update.effective_chat.id, text="_"
+    ).message_id
+    context.chat_data.update({"search_message_id": newMessageId})
+    return showCurrentRestaurant(update, context)
 
 
 def getMoreInfoOfCurrentRestaurant(update: Update, context: CallbackContext) -> int:
@@ -870,16 +992,20 @@ def __formatInputText(textToFormat: str) -> str:
     return textToFormat.replace(" ", "%20")
 
 
-def __fetchRestaurant(researchInfo: ResearchInfo, lang: str):
+def __fetchRestaurant(chatId: str, researchInfo: ResearchInfo, lang: str):
     googleKey = utils.ApiKey(utils.Service.GOOGLE_PLACES).value
+
+    radiusInMeters: int = int(
+        fetchResearchRadius(chatId, researchInfo.walkingdistance)[0]
+    )
 
     if researchInfo.opennow:
         googleResult = get(
-            f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&opennow&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&rankby=distance&type=restaurant&key={googleKey}"
+            f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&opennow&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&radius={radiusInMeters}&rankby=prominence&type=restaurant&key={googleKey}"
         )
     else:
         googleResult = get(
-            f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&rankby=distance&type=restaurant&key={googleKey}"
+            f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&radius={radiusInMeters}&rankby=prominence&type=restaurant&key={googleKey}"
         )
 
     googleResult.raise_for_status()

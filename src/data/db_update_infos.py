@@ -38,3 +38,35 @@ def updateLang(chatId: str, newLang: str) -> None:
 
     connection.commit()
     connection.close()
+
+
+def updateMaxWalkingDistance(chatId: str, newDistanceInMeters: int) -> None:
+    connection = dbConnect()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        UPDATE chat
+        SET preferred_distance_on_foot = ?
+        WHERE chat_id = ?
+    """,
+        (newDistanceInMeters, chatId),
+    )
+
+    connection.commit()
+    connection.close()
+
+
+def updateMaxCarDistance(chatId: str, newDistanceInMeters: int) -> None:
+    connection = dbConnect()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        UPDATE chat
+        SET preferred_distance_by_car = ?
+        WHERE chat_id = ?
+    """,
+        (newDistanceInMeters, chatId),
+    )
+
+    connection.commit()
+    connection.close()
