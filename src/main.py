@@ -85,6 +85,7 @@ from bot_functionalities import (
     onWalkDistanceUpdate,
     onCarDistanceUpdate,
     endSettingsConversation,
+    startPoll,
     SELECT_LANG,
     SELECT_STARTING_POSITION,
     SELECT_FOOD,
@@ -361,6 +362,7 @@ def main():
                     CallbackQueryHandler(
                         deleteFavoriteList, pattern="^" + "DELETE_LIST" + "$"
                     ),
+                    CallbackQueryHandler(startPoll, pattern="^" + "START_POLL" + "$"),
                     CallbackQueryHandler(
                         endFavoriteListsConversation, pattern="^" + "end" + "$"
                     ),

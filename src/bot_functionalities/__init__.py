@@ -47,6 +47,7 @@ from .favorites_lists import (
     backToFavListsList,
     showFavoriteRestaurantReviews,
     removeRestaurantFromList,
+    startPoll,
     deleteFavoriteList,
     showNextReviewOfFavRestaurant,
     showPrevReviewOfFavRestaurant,

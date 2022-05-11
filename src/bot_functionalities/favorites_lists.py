@@ -141,38 +141,84 @@ def showCurrentFavRestaurant(update: Update, context: CallbackContext) -> int:
         ).restaurants.current
         # Creating the keyboard to attach to the display restaurants message:
         #   by clicking 🌐                 the user will open the restaurant's website if present, otherwise it links google.com;
-        #   by clicking 🗺                 the user will be redirected to google maps to start its navigation;
+        #   by clicking 📍                 the user will be redirected to google maps to start its navigation;
         #   by clicking ⭐️                 the user will be able to see all the restaurant's reviews;
         #   by clicking ⬅️                 the prev restaurant of the list will be displayed
         #   by clicking ➡️                 the next restaurant of the list will be displayed
+        #   by clicking GENERAL_PollButton GROUPS ONLY - a poll with the restaurants in the current list is started
         #   by clicking ↩️                 the user get back to the favorites lists' list;
         #   by clicking ❌                 the conversation will end.
-        keyboard = [
-            [
-                InlineKeyboardButton(text="⬅️", callback_data="PREV_RESTAURANT"),
-                InlineKeyboardButton(text="🌐", url=f"{currentPlace.website}"),
-                InlineKeyboardButton(text="🗺️", url=f"{currentPlace.maps}"),
-                InlineKeyboardButton(text="⭐️", callback_data="VIEW_REVIEWS"),
-                InlineKeyboardButton(text="➡️", callback_data="NEXT_RESTAURANT"),
-            ],
-            [
-                InlineKeyboardButton(
-                    text=getString(
-                        "GENERAL_RemoveRestaurantFromList",
-                        context.chat_data.get("lang"),
+        if (
+            update.effective_chat.type == "group"
+            or update.effective_chat.type == "supergroup"
+        ):
+
+            keyboard = [
+                [
+                    InlineKeyboardButton(text="⬅️", callback_data="PREV_RESTAURANT"),
+                    InlineKeyboardButton(text="🌐", url=f"{currentPlace.website}"),
+                    InlineKeyboardButton(text="📍", url=f"{currentPlace.maps}"),
+                    InlineKeyboardButton(text="⭐️", callback_data="VIEW_REVIEWS"),
+                    InlineKeyboardButton(text="➡️", callback_data="NEXT_RESTAURANT"),
+                ],
+                [
+                    InlineKeyboardButton(
+                        text=getString(
+                            "GENERAL_PollButton", context.chat_data.get("lang")
+                        ),
+                        callback_data="START_POLL",
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        text=getString(
+                            "GENERAL_RemoveRestaurantFromList",
+                            context.chat_data.get("lang"),
+                        ),
+                        callback_data="REMOVE_RESTAURANT_FROM_LIST",
                     ),
-                    callback_data="REMOVE_RESTAURANT_FROM_LIST",
-                ),
-                InlineKeyboardButton(
-                    text=getString("GENERAL_DeleteList", context.chat_data.get("lang")),
-                    callback_data="DELETE_LIST",
-                ),
-            ],
-            [
-                InlineKeyboardButton(text="↩", callback_data="BACK_TO_LIST"),
-                InlineKeyboardButton(text="❌", callback_data="end"),
-            ],
-        ]
+                    InlineKeyboardButton(
+                        text=getString(
+                            "GENERAL_DeleteList", context.chat_data.get("lang")
+                        ),
+                        callback_data="DELETE_LIST",
+                    ),
+                ],
+                [
+                    InlineKeyboardButton(text="↩", callback_data="BACK_TO_LIST"),
+                    InlineKeyboardButton(text="❌", callback_data="end"),
+                ],
+            ]
+        else:
+            keyboard = [
+                [
+                    InlineKeyboardButton(text="⬅️", callback_data="PREV_RESTAURANT"),
+                    InlineKeyboardButton(text="🌐", url=f"{currentPlace.website}"),
+                    InlineKeyboardButton(text="📍", url=f"{currentPlace.maps}"),
+                    InlineKeyboardButton(text="⭐️", callback_data="VIEW_REVIEWS"),
+                    InlineKeyboardButton(text="➡️", callback_data="NEXT_RESTAURANT"),
+                ],
+                [
+                    InlineKeyboardButton(
+                        text=getString(
+                            "GENERAL_RemoveRestaurantFromList",
+                            context.chat_data.get("lang"),
+                        ),
+                        callback_data="REMOVE_RESTAURANT_FROM_LIST",
+                    ),
+                    InlineKeyboardButton(
+                        text=getString(
+                            "GENERAL_DeleteList", context.chat_data.get("lang")
+                        ),
+                        callback_data="DELETE_LIST",
+                    ),
+                ],
+                [
+                    InlineKeyboardButton(text="↩", callback_data="BACK_TO_LIST"),
+                    InlineKeyboardButton(text="❌", callback_data="end"),
+                ],
+            ]
+
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         context.bot.edit_message_text(
@@ -231,6 +277,66 @@ def showPrevFavRestaurant(update: Update, context: CallbackContext) -> int:
         ).restaurants.setCurrentElementWithHisPrev()
 
         return showCurrentFavRestaurant(update, context)
+
+
+def startPoll(update: Update, context: CallbackContext):
+    """Starts a poll in a group chat with the current favorites list."""
+    verifyChatData(update=update, context=context)
+
+    query = update.callback_query
+    query.answer()
+
+    # Getting a copy of the current restaurants list.
+    restaurantsList: RestaurantList = context.chat_data.get(
+        "current_list_restaurants"
+    ).restaurants.clone()
+
+    if restaurantsList.size < 2:
+        # Cannot create a poll with less than 2 options
+        context.bot.edit_message_text(
+            chat_id=update.effective_chat.id,
+            message_id=context.chat_data.get("fav_list_message_id"),
+            text=getString(
+                "ERROR_InsufficientPollOptions", context.chat_data.get("lang")
+            ),
+        )
+        newMessageId = context.bot.send_message(
+            chat_id=update.effective_chat.id, text="_"
+        ).message_id
+        context.chat_data.update({"fav_list_message_id": newMessageId})
+
+        return showCurrentFavRestaurant(update, context)
+    elif restaurantsList.size > 10:
+        # Due to telegram internal limits, poll cannot have more than 10 possible choices
+        numberOfPollChoices = 10
+    else:
+        # If  2 <= restaurantsList.size <= 10, than we display only those options
+        numberOfPollChoices = restaurantsList.size
+
+    # Compiling the poll choices with the restaurants names starting from the current one.
+    pollChoices: list = []
+    for i in range(numberOfPollChoices):
+        pollChoices.append(restaurantsList.current.name)
+        restaurantsList.setCurrentElementWithHisNext()
+
+    # Sending the poll. After 1 minute it will automatically close.
+    context.bot.send_poll(
+        update.effective_chat.id,
+        getString("GENERAL_PollStarted", context.chat_data.get("lang")),
+        pollChoices,
+        is_anonymous=False,
+        allows_multiple_answers=False,
+        open_period=60,
+    )
+    context.bot.delete_message(
+        chat_id=update.effective_chat.id,
+        message_id=context.chat_data.get("fav_list_message_id"),
+    )
+    newMessageId = context.bot.send_message(
+        chat_id=update.effective_chat.id, text="_"
+    ).message_id
+    context.chat_data.update({"fav_list_message_id": newMessageId})
+    return showCurrentFavRestaurant(update, context)
 
 
 def backToFavListsList(update: Update, context: CallbackContext) -> int:
@@ -402,9 +508,10 @@ def deleteFavoriteList(update: Update, context: CallbackContext) -> int:
     # Removing all the entries of the assosciation between the current restaurant and the list in the restaurant_for_list table
     # in the database
     for restaurant in context.chat_data.get("current_list_restaurants").restaurants:
-        removeRestaurantFromListDb(restaurant.id, context.chat_data.get("current_list_restaurants").id)
-        # TODO: rendere iterabile la lista di ristoranti e di recensioni
-        
+        removeRestaurantFromListDb(
+            restaurant.id, context.chat_data.get("current_list_restaurants").id
+        )
+
     # Removing the list from the database
     removeFavoriteListFromDb(context.chat_data.get("current_list_restaurants").id)
 

@@ -113,20 +113,12 @@ GENERAL_STRINGS = {
         """,
     },
     "GENERAL_MoreInfos": {
-        "it": """
-        💡 Maggiori informazioni 💡
-        """,
-        "en": """
-        💡 More infos 💡
-        """,
+        "it": """💡 Maggiori informazioni 💡""",
+        "en": """💡 More infos 💡""",
     },
     "GENERAL_PollButton": {
-        "it": """
-        📊 Avvia un Sondaggio 📊
-        """,
-        "en": """
-        📊 Start a Poll 📊
-        """,
+        "it": """📊 Avvia un Sondaggio 📊""",
+        "en": """📊 Start a Poll 📊""",
     },
     "GENERAL_PollStarted": {
         "it": """
@@ -177,28 +169,16 @@ GENERAL_STRINGS = {
         """,
     },
     "GENERAL_AddToFavorites": {
-        "it": """
-               📄 Aggiungi ai preferiti
-        """,
-        "en": """
-               📄 Add to favorites
-        """,
+        "it": """📄 Aggiungi ai preferiti""",
+        "en": """📄 Add to favorites""",
     },
     "GENERAL_RemoveRestaurantFromList": {
-        "it": """
-               Rimuovi
-        """,
-        "en": """
-               Remove
-        """,
+        "it": """Rimuovi""",
+        "en": """Remove""",
     },
     "GENERAL_DeleteList": {
-        "it": """
-               Elimina lista
-        """,
-        "en": """
-               Delete list
-        """,
+        "it": """Elimina lista""",
+        "en": """Delete list""",
     },
     "GENERAL_RestaurantRemovedFromFavList": {
         "it": """
