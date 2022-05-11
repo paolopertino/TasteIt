@@ -79,6 +79,58 @@
 	TasteIt è un bot Telegram che si propone di aiutare gli utenti a effettuare una ricerca del ristorante in cui consumare un pasto, in base alle loro esigenze in termini di ciò che vogliono consumare, di orario e di prezzo. La ricerca può aver inizio a partire dalla propria posizione, oppure dal nome di una località, piazza o via di interesse.\\
 	Infine, la semplice operazione di ricerca è stata corredata dalla possibilità di creare liste dei preferiti, interattività della conversazione nei gruppi con possibilità di creare sondaggi ed è inoltre fornito un supporto per diverse lingue (attualmente sono implementate solo Italiano e Inglese).
 	
+	\subsection{Obiettivi}
+	\paragraph{}
+	Come anticipato nel paragrafo precedente, TasteIt si propone di essere una valida interfaccia per i servizi offerti da Google Maps in termini di ricerca di ristoranti. Per questo motivo, di seguito elenchiamo i principali obiettivi preposti:
+	\begin{itemize}
+		\item \textbf{Ricerca Personalizzata}
+		
+		Offrire una ricerca personalizzata del ristornate in cui consumare il proprio pasto, in termini di cibo desiderato, orario di apertura, fascia di prezzo, posizione iniziale di ricerca e preferenze relative alla distanza massima che si vuole percorrere (2 filtri di default per indicare la volontà di sopraggiungere al locale a piedi o in macchina).
+		
+		\item \textbf{Informazioni del ristorante}
+		
+		Fornire inizialmente delle informazioni riassuntive che permettano all'utente di scegliere un ristorante (che possiamo assumere essere valutazione complessiva e numero di recensioni) e successivamente, sotto richiesta dello stesso, mostrare informazioni più dettagliate, comprendenti anche indirizzo, numero di telefono, sito web (se presente) e recensioni degli utenti.
+		
+		\item \textbf{Gestione preferiti}
+		
+		Offrire la possibilità ad utenti e gruppi di salvare i ristoranti di interesse in liste dei preferiti, consultabili in autonomia in qualsiasi momento.
+		
+		\item \textbf{Interattività nei gruppi}
+		
+		Rendere interattivo ed utilizzabile il bot nei gruppi, in modo tale da essere uno strumento effettivamente utile per coordinare l'organizzazione di più persone. A tal proposito, solamente nei gruppi, a valle di una ricerca effettuata, permettere la decisione attraverso sondaggi.
+		
+		\item \textbf{Persistenza dei dati}
+		
+		I dati principali dell'utente o di un gruppo, quali lingua ed impostazioni relative ai filtri di distanza massima, devono essere persistenti e non relegati alla singola conversazione.ù
+		
+		\item \textbf{Multilingua}
+		
+		Permettere la personalizzazione della lingua \textit{"parlata"} dal bot. Offrire di default Italiano e Inglese.
+	\end{itemize}
+
+	\newpage
+	\subsection{Requisiti}
+	\paragraph{}
+	Per far fronte agli obiettivi dichiarati nella sezione precedente, TasteIt deve soddisfare i seguenti requisiti:
+	\begin{itemize}
+		\item \textbf{Parametrizzazione della ricerca}
+		
+		Permettere all'utente di personalizzare la propria ricerca, fornendogli la possibilità di modificare tutti i parametri che caratterizzano la stessa (cibo desiderato, fascia di prezzo, orario, metodo di raggiungimento) nella fase che la precede.
+		
+		\item \textbf{Richiesta e gestione delle informazioni}
+		
+		Per limitare i costi delle Places API è necessario fare richiesta, \textbf{nel momento opportuno}, delle sole informazioni di interesse. É pertanto necessario prevedere fasi distinte tra visualizzazione della lista dei ristoranti della zona di ricerca ed informazioni dettagliate di un singolo locale.
+		
+		\item \textbf{Persistenza e gestione dei dati}
+		
+		Costruire un'apposita base di dati che permetta di salvare le informazioni relative agli utenti e ai gruppi, come lingua desiderata e liste dei preferiti, in modo tale che esse siano consultabili e modificabili in qualsiasi momento.
+		
+		\item \textbf{Compatibilità con i gruppi}
+		
+		Fornire la compatibilità delle conversazioni, di default disponibili in chat privata, anche nei gruppi, prevedendo l'interazione del bot con molteplici agenti in una stessa conversazione. Per agevolare l'operazione di scelta di un ristorante, permettere la creazione di sondaggi tra i ristoranti appartenenti alla lista che si sta visualizzando.
+	\end{itemize}
+	
+	\newpage
 	\subsection{Installazione}
 	\paragraph{}
 	Per poter avviare il bot è necessario avere Python 3.x \cite{python_installation} installato sul proprio dispositivo.\\
@@ -115,6 +167,15 @@
 		$ py ./main.py
 	\end{minted}
 	per avviare l'applicativo.
+	\subsubsection{Permessi per i gruppi}
+	\paragraph{}
+	Se si vuole aggiungere TasteIt ad un gruppo, assicurarsi di fornirgli i seguenti permessi da amministratore:
+	\newpage
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=1.1]{adminPermissions.png}
+		\caption{Permessi da assegnare a TasteIt nei gruppi}
+	\end{figure}
 	
 	\newpage
 	% Lista di funzionalità
@@ -122,6 +183,8 @@
 	Di seguito elenchiamo le funzionalità offerte dal bot ed i comandi necessari per l'interazine.
 	\begin{itemize}
 		\item \textit{/start} - Avvia il bot mostrando un messaggio di benvenuto all'utente.
+		\item \textit{/help} - Permette la visualizzazione di tutti i comandi disponibili.
+		\item \textit{/settings} - Permette la modifica di alcuni parametri di ricerca.
 		\item \textit{/lang} - Permette il cambio di lingua. Esso impatterà sia sui messaggi di servizio sia sugli effettivi risultati di ricerca.
 		\item \textit{/cerca} - Introduce la conversazione per iniziare la ricerca di un ristorante.
 		\item \textit{/preferiti} - Mostra all'utente (o al gruppo) le sue liste preferiti.
@@ -138,6 +201,9 @@
 	\end{figure}
 
 	Selezionando una delle bandiere, la lingua muterà in quella selezionata ed i dati verranno anche aggiornati nel database.
+	
+	\subsection{/settings - Modifica dei filtri sul raggio di ricerca}
+	TODO: Inserire settings
 	
 	\subsection{/cerca - Ricerca dei ristoranti}
 	TODO: Inserire ricerca ristoranti
