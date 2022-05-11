@@ -23,6 +23,8 @@
 \usepackage{hyperref}
 % Citations
 \usepackage{epigraph}
+% Emojis
+\usepackage{emoji}
 
 % Title Page
 \title{TasteIt - Progetto di Ingegneria Informatica}
@@ -192,6 +194,7 @@
 	\end{itemize}
 	
 	\subsection{/lang - Modifica lingua}
+	\paragraph{}
 	Digitando il comando \textit{/lang} è possibile modificare la lingua con cui interagire con il bot. Quest'ultimo invierà un messaggio con allegato una tastiera contenente le lingue disponibili (di default soltanto Italiano ed Inglese).
 	
 	\begin{figure}[h!]
@@ -203,10 +206,101 @@
 	Selezionando una delle bandiere, la lingua muterà in quella selezionata ed i dati verranno anche aggiornati nel database.
 	
 	\subsection{/settings - Modifica dei filtri sul raggio di ricerca}
-	TODO: Inserire settings
+	\paragraph{}
+	Attraverso il comando \textit{/settings} è possibile modificare i parametri di default relativi alla massima distanza percorribile sia a piedi sia in macchina (di default a piedi 1.5 km e in macchina 20 km).\\
+	Tali nuove informazioni saranno salvate nel database in modo tale da essere utilizzate come raggio quando si effettua un'operazione di ricerca di un ristorante.
+	\newpage
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.9]{settingsCommand.png}
+		\caption{Risposta al comando /settings}
+	\end{figure}
+	\paragraph{}
+	Cliccando il bottone \textit{Distanza max a piedi} o \textit{Distanza max in macchina} sarà successivamente possibile scegliere un valore compreso tra 1 e 50'000 per indicare il nuovo raggio di ricerca da settare come valore di default (in metri) per gli spostamenti a piedi o in macchina.\\
 	
 	\subsection{/cerca - Ricerca dei ristoranti}
-	TODO: Inserire ricerca ristoranti
+	\paragraph{}
+	A seguito del comando \textit{/cerca} inizierà la conversazione che gestisce l'intera fase di ricerca di un ristorante. La procedura è interamente guidata ed è articolata in diversi passi, di cui di seguito presentiamo una breve descrizione e delle immagini prese dalla conversazione stessa.
+	
+	\begin{enumerate}
+		\item \textbf{Richiesta della posizione}
+		
+		Il primo step richiede all'utente di inserire la posizione da cui far iniziare la ricerca. Essa può essere specificata manualmente fornendo il nome di una località, via, piazza, etc... oppure inviando la propria posizione attuale utilizzando la funzionalità nativa di telegram.
+		
+		\begin{figure}[!htb]
+			\begin{minipage}{0.45\textwidth}
+				\centering
+				\includegraphics[width=\linewidth]{cercaCommand_startingPoseByName.png}
+				\caption{Posizione iniziale da nome}
+			\end{minipage}\hfill
+			\begin{minipage}{0.45\textwidth}
+				\centering
+				\includegraphics[width=\linewidth]{cercaCommand_startingPoseByCurrentPosition.png}
+				\caption{Posizione iniziale da posizione attuale}
+			\end{minipage}
+		\end{figure}
+	
+		\item \textbf{Richiesta del tipo di cibo}
+		
+		Il secondo step prevede l'inserimento da parte dell'utente di ciò che vuole mangiare.
+		\begin{figure}[!htb]
+			\centering
+			\includegraphics[scale=0.9]{cercaCommand_foodChoice.png}
+			\caption{Scelta del cibo}
+		\end{figure}
+	
+		\item \textbf{Messaggio di recap}
+		
+		Il terzo step consiste nella revisione di tutti i parametri con cui verrà effettuata la ricerca.
+		Al messaggio di recap vengono affissi dei bottoni che permettono di modificare tali parametri. Nello specifico è possibile:
+		\begin{enumerate}
+			\item modificare la preferenza riguardante il cibo;
+			\item includere nella ricerca i ristoranti che da orario sono al momento della stessa chiusi oppure escluderli e visualizzare soltanto quelli aperti;
+			\item modificare la fascia di prezzo;
+			\item scegliere se sopraggiungere al locale a piedi oppure in macchina;
+		\end{enumerate}
+		\begin{figure}[!htb]
+			\centering
+			\includegraphics[scale=0.9]{cercaCommand_recapMsg.png}
+			\caption{Messaggio di recap}
+		\end{figure}
+		Premendo la lente di ingrandimento avrà dunque inizio la ricerca con i parametri specificati.
+		
+		\item \textbf{Visualizzazione lista dei ristoranti trovati}
+		
+		Dopo una breve attesa in cui vengono interrogate le Places API, verrà inviato un messaggio a cui è affissa una tastiera per scorrere i ristoranti estratti che soddisfano le caratteristiche specificate negli stage precedenti. Per ogni locale sono mostrate poche informazioni, quali nome, valutazione media degli utenti e numero totale di recensioni. 
+		
+		
+		
+		\newpage
+		\begin{figure}[!htb]
+			\begin{minipage}{0.35\textwidth}
+				\centering
+				\includegraphics[width=\linewidth]{cercaCommand_generalRestaurantInfoList.png}
+				\caption{Lista di ristoranti}
+			\end{minipage}\hfill
+			\begin{minipage}{0.35\textwidth}
+				\centering
+				\includegraphics[width=\linewidth]{cercaCommand_generalRestaurantInfoListGroups.png}
+				\caption{Lista dei ristoranti nei gruppi}
+			\end{minipage}
+		\end{figure}
+	
+		\item \textbf{Informazioni dettagliate}
+		
+		Cliccando il pulsante \textit{"Maggiori informazioni"} verranno effettivamente mostrate info più dettagliate sul ristorante scelto.
+		\begin{figure}[!htb]
+			\centering
+			\includegraphics[scale=0.9]{cercaCommand_detailedInfo.png}
+			\caption{Lista di ristoranti}
+		\end{figure}
+	\paragraph{}
+	I bottoni legati al messaggio permettono rispettivamente di visitare il sito web (se presente), aprire Google Maps alla posizione del ristorante per ottenere indicazioni, visualizzare le recensioni e aggiungere il locale ad una lista dei preferiti.
+	
+	\item \textbf{Recensioni}
+	TODO: visualizzare le recensioni
+		
+	\end{enumerate}
 	
 	\subsection{/preferiti - Lista dei preferiti}
 	TODO: Inserire lista dei preferiti
@@ -224,14 +318,14 @@
 	Nella Figura \ref{fig:ER_image} è stato riportato il diagramma ER rappresentante la semplice struttura del database.
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.7]{tasteItDb.png}
+		\includegraphics[scale=0.62]{tasteItDb.png}
 		\caption{Schema ER Database TasteIt}
 		\label{fig:ER_image}
 	\end{figure}
 	\paragraph{}
 	La relazione \textit{'Contiene'} è stata successivamente trasformata in una tabella ponte chiamata \textit{restaurant\_for\_list}.
-	Pertanto, riportiamo di seguito lo schema logico dedotto dalla progettazione concettuale effettuata.\\
-	chat(\textbf{chat\_id}, lang)\\
+	Pertanto, riportiamo di seguito lo schema logico dedotto dalla progettazione concettuale effettuata:\\
+	chat(\textbf{chat\_id}, lang, preferred\_distance\_on\_foot, preferred\_distance\_by\_car)\\
 	restaurant(\textbf{restaurant\_id}, name, address, phone\_number, rating, website, total\_ratings, price\_lvl, timetable, maps\_link)\\
 	list(\textbf{list\_id}, category, chat\_id)\\
 	restaurant\_for\_list(\textbf{list\_id, chat\_id})\\
@@ -283,12 +377,34 @@
 	\paragraph{}
 	Risponde alla richiesta effettuata con il comando \textit{/cerca} e gestisce l'intera conversazione di ricerca dei ristoranti e visualizzazione dei risultati.\\
 	\begin{figure}[h!]
-	\centering
-	\includegraphics[scale=0.7]{TasteIt_Cerca_StateMachine.png}
-	\caption{/cerca - State Machine}
-	\label{fig:CercaStateMachine}
+		\centering
+		\includegraphics[scale=0.6]{TasteIt_Cerca_StateMachine.png}
+		\caption{/cerca - State Machine}
+		\label{fig:CercaStateMachine}
 	\end{figure}
 	
+	\newpage
+	\subsubsection{Visualizza lista preferiti}
+	\paragraph{}
+	Risponde al comando \textit{/preferiti}. Gestisce l'intera conversazione che permette di visualizzare e modificare le proprie liste dei preferiti.\\
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.6]{TasteIt_Preferiti_StateMachine.png}
+		\caption{/preferiti - State Machine}
+		\label{fig:PreferitiStateMachine}
+	\end{figure}
+
+	\subsubsection{Modifica impostazioni}
+	\paragraph{}
+	Risponde al comando \textit{/settings}. Gestisce la conversazione che permette all'utente di modificare i suoi parametri di default relativi alla distanza massima percorribile quando viene effettuata una ricerca.
+	\newpage
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.5]{TasteIt_Settings_StateMachine.png}
+		\caption{/settings - State Machine}
+		\label{fig:SettingsStateMachine}
+	\end{figure}
+
 	% Strumenti usati
 	\newpage
 	\section{Strumenti utilizzati}
