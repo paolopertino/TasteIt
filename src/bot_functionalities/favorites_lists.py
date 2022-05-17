@@ -62,7 +62,10 @@ def displayFavoritesLists(update: Update, context: CallbackContext) -> int:
                 [
                     InlineKeyboardButton(
                         text=favoriteList.category, callback_data=favoriteList.id
-                    )
+                    ),
+                    InlineKeyboardButton(
+                        text="🗑", callback_data="DELETE" + str(favoriteList.id)
+                    ),
                 ]
             )
         # To stop the current conversation we also add a stop button.
@@ -505,18 +508,16 @@ def deleteFavoriteList(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
 
-    # Removing all the entries of the assosciation between the current restaurant and the list in the restaurant_for_list table
-    # in the database
-    for restaurant in context.chat_data.get("current_list_restaurants").restaurants:
-        removeRestaurantFromListDb(
-            restaurant.id, context.chat_data.get("current_list_restaurants").id
-        )
+    if context.chat_data.get("current_list_restaurants") != None:
+        listToDeleteId = context.chat_data.get("current_list_restaurants").id
+        # Popping out the list from chat data and returning the list of lists and deleting the message with fav_list_message_id id.
+        context.chat_data.pop("current_list_restaurants")
+    else:
+        listToDeleteId = int(update.callback_query.data[6:])
 
     # Removing the list from the database
-    removeFavoriteListFromDb(context.chat_data.get("current_list_restaurants").id)
+    removeFavoriteListFromDb(listToDeleteId)
 
-    # Popping out the list from chat data and returning the list of lists and deleting the message with fav_list_message_id id.
-    context.chat_data.pop("current_list_restaurants")
     context.bot.delete_message(
         chat_id=update.effective_chat.id,
         message_id=context.chat_data.get("fav_list_message_id"),

@@ -23,8 +23,6 @@
 \usepackage{hyperref}
 % Citations
 \usepackage{epigraph}
-% Emojis
-\usepackage{emoji}
 
 % Title Page
 \title{TasteIt - Progetto di Ingegneria Informatica}
@@ -269,9 +267,7 @@
 		\item \textbf{Visualizzazione lista dei ristoranti trovati}
 		
 		Dopo una breve attesa in cui vengono interrogate le Places API, verrà inviato un messaggio a cui è affissa una tastiera per scorrere i ristoranti estratti che soddisfano le caratteristiche specificate negli stage precedenti. Per ogni locale sono mostrate poche informazioni, quali nome, valutazione media degli utenti e numero totale di recensioni. 
-		
-		
-		
+			
 		\newpage
 		\begin{figure}[!htb]
 			\begin{minipage}{0.35\textwidth}
@@ -298,12 +294,32 @@
 	I bottoni legati al messaggio permettono rispettivamente di visitare il sito web (se presente), aprire Google Maps alla posizione del ristorante per ottenere indicazioni, visualizzare le recensioni e aggiungere il locale ad una lista dei preferiti.
 	
 	\item \textbf{Recensioni}
-	TODO: visualizzare le recensioni
-		
+	
+	Cliccando la stella è possibile visualizzare le recensioni del ristorante, se presenti:
+	\begin{figure}[!htb]
+		\centering
+		\includegraphics[scale=0.9]{cercaCommand_viewReviews.png}
+		\caption{Visualizzazione delle recensioni}
+	\end{figure}
+	\paragraph{}
+	Cliccando sulle frecce poste sul lato superiore della tastiera è possibile scorrere le recensioni.
+	
+	\item \textbf{Aggiungi ai preferiti}
+	
+	Invece, con un tap sul bottone \textit{Aggiungi ai preferiti} è infine possibile aggiungere il ristorante di cui si stanno visualizzando le informazioni dettagliate ad una lista dei preferiti. É possibile scegliere sia una lista già esistente, sia crearne una nuova come è possibile notare in figura.
+	\begin{figure}[!htb]
+		\centering
+		\includegraphics[scale=0.9]{cercaCommand_addToFavorites.png}
+		\caption{Aggiungi ai preferiti}
+	\end{figure}
+	\paragraph{}	
 	\end{enumerate}
 	
+	\newpage
 	\subsection{/preferiti - Lista dei preferiti}
-	TODO: Inserire lista dei preferiti
+	\paragraph{}
+	Utilizzando il comando \textit{/preferiti} inizia la conversazione che gestisce la visualizzazione delle proprie liste dei preferiti, se presenti, e del loro aggiornamento (cancellazione della lista e rimozione di ristoranti).
+	
 	
 	\newpage
 	% Architettura
@@ -397,10 +413,9 @@
 	\subsubsection{Modifica impostazioni}
 	\paragraph{}
 	Risponde al comando \textit{/settings}. Gestisce la conversazione che permette all'utente di modificare i suoi parametri di default relativi alla distanza massima percorribile quando viene effettuata una ricerca.
-	\newpage
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.5]{TasteIt_Settings_StateMachine.png}
+		\includegraphics[scale=0.57]{TasteIt_Settings_StateMachine.png}
 		\caption{/settings - State Machine}
 		\label{fig:SettingsStateMachine}
 	\end{figure}

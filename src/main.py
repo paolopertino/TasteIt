@@ -339,6 +339,7 @@ def main():
                     CallbackQueryHandler(
                         endFavoriteListsConversation, pattern="^" + "end" + "$"
                     ),
+                    CallbackQueryHandler(deleteFavoriteList, pattern="^" + "DELETE"),
                     CallbackQueryHandler(pickedList),
                 ],
                 RESTAURANT_INFOS_DISPLAY: [
