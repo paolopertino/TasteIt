@@ -139,8 +139,6 @@ def onCarDistanceUpdate(update: Update, context: CallbackContext) -> int:
     """Update the maximum car distance in the database for the user with the current chat_id."""
     verifyChatData(update, context)
 
-    query = update.callback_query
-    query.answer()
     callback_data = update.message.text
 
     try:
