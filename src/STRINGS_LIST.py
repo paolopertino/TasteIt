@@ -77,7 +77,7 @@ GENERAL_STRINGS = {
                  Perfetto ✅, inizierò la mia ricerca a partire da <b>{}</b>.\nCosa vuoi mangiare?
               """,
         "en": """
-                 Awesome ✅, I'll start the research from <b>{}</b>.\nWhat would you like to eat?
+                 Awesome ✅, I'll start the search from <b>{}</b>.\nWhat would you like to eat?
               """,
     },
     "GENERAL_SearchRestaurantCurrentPositionAccepted": {
@@ -85,16 +85,12 @@ GENERAL_STRINGS = {
                  Perfetto ✅, inizierò la mia ricerca a partire dalla tua <b>posizione attuale</b>.\nCosa vuoi mangiare?
               """,
         "en": """
-                 Awesome ✅, I'll start the research from your <b>current position</b>.\nWhat would you like to eat?
+                 Awesome ✅, I'll start the search from your <b>current position</b>.\nWhat would you like to eat?
               """,
     },
     "GENERAL_SearchRestaurantInfoRecap": {
-        "it": """
-               ℹ️ <b>TasteIt - Info</b> ℹ️\n🍝 Cibo  - <b>{}</b>\n🕧 Ristorante aperto ora ? - {}\n{}\n💶 Prezzo massimo - <b>{}</b>\n\nVuoi modificare qualcosa?
-              """,
-        "en": """
-               ℹ️ <b>TasteIt - Info</b> ℹ️\n🍝 Food - <b>{}</b>\n🕧 Restaurant open now ? - {}\n{}\n💶 Max price - <b>{}</b>\n\nDo you want to modify something?
-              """,
+        "it": """ℹ️ <b>TasteIt - Info</b> ℹ️\n🍝 Cibo  - <b>{}</b>\n🕧 Ristorante aperto ora ? - {}\n{}\n💶 Prezzo massimo - <b>{}</b>\n\nVuoi modificare qualcosa?""",
+        "en": """ℹ️ <b>TasteIt - Info</b> ℹ️\n🍝 Food - <b>{}</b>\n🕧 Restaurant open now ? - {}\n{}\n💶 Max price - <b>{}</b>\n\nDo you want to modify something?""",
     },
     "GENERAL_FoodPreferenceReset": {
         "it": """
@@ -105,12 +101,8 @@ GENERAL_STRINGS = {
         """,
     },
     "GENERAL_RestaurantInfoDisplay": {
-        "it": """
-               🍣 <b>TasteIt - Risultati</b> 🍝\n Ristorante - <b>{}</b>\n{}\n{} recensioni totali.
-        """,
-        "en": """
-               🍣 <b>TasteIt - Results</b> 🍝\n Restaurant - <b>{}</b>\n{}\n{} total reviews.
-        """,
+        "it": """🍣 <b>TasteIt - Risultati</b> 🍝\n Ristorante - <b>{}</b>\n{}\n{} recensioni totali.""",
+        "en": """🍣 <b>TasteIt - Results</b> 🍝\n Restaurant - <b>{}</b>\n{}\n{} total reviews.""",
     },
     "GENERAL_MoreInfos": {
         "it": """💡 Maggiori informazioni 💡""",
@@ -121,28 +113,17 @@ GENERAL_STRINGS = {
         "en": """📊 Start a Poll 📊""",
     },
     "GENERAL_PollStarted": {
-        "it": """
-        🍣 TasteIt - Sondaggio 🍝\n\n📊 Sondaggio creato. Scegliete un ristorante:
-        """,
-        "en": """
-        🍣 TasteIt - Poll 🍝\n\n📊 Poll started. Pick a restaurant:
-        """,
+        "it": """🍣 TasteIt - Sondaggio 🍝\n\n📊 Sondaggio creato. Scegliete un ristorante:""",
+        "en": """🍣 TasteIt - Poll 🍝\n\n📊 Poll started. Pick a restaurant:""",
     },
     "GENERAL_DetailedInfoOfRestaurant": {
-        "it": """
-               🍣 <b>TasteIt - Dettaglio</b> 🍝\n\n🍴 Locale - <b>{}</b>\n📍Indirizzo - <b><a href='{}'>{}</a></b>\n ☎️ Telefono - <a href='tel:{}'>{}</a>\n💶 Prezzo - <b>{}</b>\n{}\n{} recensioni totali.\n––––––––––––––––––\n\n🕙 Orario 🕟\n{}
-        """,
-        "en": """
-               🍣 <b>TasteIt - Details</b> 🍝\n\n🍴 Restaurant - <b>{}</b>\n📍Address - <b><a href='{}'>{}</a></b>\n ☎️ Phone - <a href='tel:{}'>{}</a>\n💶 Price - <b>{}</b>\n{}\n{} total reviews.\n––––––––––––––––––\n\n🕙 Timetable 🕟\n{}
-        """,
+        "it": """🍣 <b>TasteIt - Dettaglio</b> 🍝\n\n🍴 Locale - <b>{}</b>\n📍Indirizzo - <b><a href='{}'>{}</a></b>\n ☎️ Telefono - <a href='tel:{}'>{}</a>\n💶 Prezzo - <b>{}</b>\n{}\n{} recensioni totali.\n––––––––––––––––––\n\n🕙 Orario 🕟\n{}""",
+        "en": """🍣 <b>TasteIt - Details</b> 🍝\n\n🍴 Restaurant - <b>{}</b>\n📍Address - <b><a href='{}'>{}</a></b>\n ☎️ Phone - <a href='tel:{}'>{}</a>\n💶 Price - <b>{}</b>\n{}\n{} total reviews.\n––––––––––––––––––\n\n🕙 Timetable 🕟\n{}""",
     },
     "GENERAL_ReviewContent": {
-        "it": """
-               🍣 <b>TasteIt - Recensione</b> 🍝\n\n 💁🏼‍♂️ Autore - <b>{}</b>\n🗓 Data - <b>{}</b>\n\n<i>{}</i>\n{} - {}/5
-        """,
+        "it": """🍣 <b>TasteIt - Recensione</b> 🍝\n\n 💁🏼‍♂️ Autore - <b>{}</b>\n🗓 Data - <b>{}</b>\n\n<i>{}</i>\n{} - {}/5""",
         "en": """
-               🍣 <b>TasteIt - Review</b> 🍝\n\n 💁🏼‍♂️ Author - <b>{}</b>\n🗓 Date - <b>{}</b>\n\n<i>{}</i>\n{} - {}/5
-        """,
+               🍣 <b>TasteIt - Review</b> 🍝\n\n 💁🏼‍♂️ Author - <b>{}</b>\n🗓 Date - <b>{}</b>\n\n<i>{}</i>\n{} - {}/5""",
     },
     "GENERAL_ShowCategories": {
         "it": """
@@ -197,12 +178,8 @@ GENERAL_STRINGS = {
         "en": """🚙 I'll reach the restaurant by car (max {} km).""",
     },
     "GENERAL_ChangeSettingsIntro": {
-        "it": """
-               ⚙️ TasteIt Settings ⚙️\n\nValori attuali:\n\t 🚶‍♂️ - <b>{}</b> metri\n\t 🚙 - <b>{}</b> metri\n\nQuale parametro vuoi cambiare?
-        """,
-        "en": """
-               ⚙️ TasteIt Settings ⚙️\n\nCurrent values:\n\t 🚶‍♂️ - <b>{}</b> meters\n\t 🚙 - <b>{}</b> meters\n\nWhich parameter do you want to change?
-        """,
+        "it": """⚙️ TasteIt Settings ⚙️\n\nValori attuali:\n\t 🚶‍♂️ - <b>{}</b> metri\n\t 🚙 - <b>{}</b> metri\n\nQuale parametro vuoi cambiare?""",
+        "en": """⚙️ TasteIt Settings ⚙️\n\nCurrent values:\n\t 🚶‍♂️ - <b>{}</b> meters\n\t 🚙 - <b>{}</b> meters\n\nWhich parameter do you want to change?""",
     },
     "GENERAL_ReachableOnFootSet": {
         "it": """🚶‍♂️ Distanza max a piedi""",
@@ -241,10 +218,10 @@ ERROR_STRINGS = {
     },
     "ERROR_ChoseAnAvailableOption": {
         "it": """
-                 Per favore, scegli una delle opzioni disponibili prima di continuare.
+                 Per favore, scegli una delle opzioni disponibili prima di continuare, altrimenti digita /annulla prima di continuare.
               """,
         "en": """
-                 Please, chose an available option from the above ones before continuing.
+                 Please, chose an available option from the above ones before continuing, otherwise please type /annulla before continuing.
               """,
     },
     "ERROR_GoogleCriticalError": {
@@ -265,10 +242,10 @@ ERROR_STRINGS = {
     },
     "ERROR_NoRestaurantsFound": {
         "it": """
-                 Nessun ristorante trovato con i parametri specificati. Prova ad iniziare una nuova ricerca.
+                 Nessun ristorante trovato con i parametri specificati. Modificali utilizzando la tastiera qui sotto.
               """,
         "en": """
-                 No restaurants found with the specified parameters. Try starting a new research.
+                 No restaurants found with the specified parameters. Modify them by using the keyboard below.
               """,
     },
     "ERROR_InsufficientPollOptions": {
@@ -281,10 +258,10 @@ ERROR_STRINGS = {
     },
     "ERROR_InvalidPosition": {
         "it": """
-                 Posizione invalida, inviami nuovamente la tua posizione o il nome di una località di interesse.
+                 Posizione invalida. Inviami nuovamente la tua posizione o il nome di una località di interesse.
               """,
         "en": """
-                 Invalid position\. Please, send me back again a location name of your interest or your current position.
+                 Invalid position. Please, send me back again a location name of your interest or your current position.
               """,
     },
     "ERROR_TimetableNotAvailable": {
@@ -316,7 +293,7 @@ ERROR_STRINGS = {
                  Non hai ancora creato alcuna lista. Cerca un ristorante e creane una.
               """,
         "en": """
-                 You haven't created a list yet. Start a restaurant research and create a new one.
+                 You haven't created a list yet. Start a restaurant search and create a new one.
               """,
     },
     "ERROR_EmptyList": {
