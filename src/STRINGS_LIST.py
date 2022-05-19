@@ -218,10 +218,10 @@ ERROR_STRINGS = {
     },
     "ERROR_ChoseAnAvailableOption": {
         "it": """
-                 Per favore, scegli una delle opzioni disponibili prima di continuare, altrimenti digita /annulla prima di continuare.
+                 Per favore, scegli una delle opzioni disponibili prima di continuare, altrimenti digita /annulla.
               """,
         "en": """
-                 Please, chose an available option from the above ones before continuing, otherwise please type /annulla before continuing.
+                 Please, chose an available option from the above ones before continuing, otherwise please type /annulla.
               """,
     },
     "ERROR_GoogleCriticalError": {
