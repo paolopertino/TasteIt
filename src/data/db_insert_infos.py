@@ -34,7 +34,7 @@ def insertChat(chatId: str, language: str) -> None:
     connection = dbConnect()
     cursor = connection.cursor()
     cursor.execute(
-        "INSERT INTO chat VALUES(?, ?, ?, ?)", (chatId, language, 1500, 20000)
+        "INSERT INTO chat VALUES(?, ?, ?, ?)", (chatId, language, 500, 10000)
     )
     connection.commit()
     connection.close()

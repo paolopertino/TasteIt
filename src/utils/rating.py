@@ -35,7 +35,12 @@ class Rating:
         Returns:
             `copyOfSelf` : `Rating` : a copied version of the Rating object
         """
-        copyOfSelf: Rating = Rating(self.author, self.rating, self.content, self.date)
+        copyOfSelf: Rating = Rating(
+            self.author,
+            self.rating,
+            self.content,
+            datetime.strptime(self.date, "%d/%m/%Y").timestamp(),
+        )
 
         return copyOfSelf
 
