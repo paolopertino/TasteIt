@@ -48,6 +48,8 @@ class Restaurant(GeneralPlace):
         self.__mapsUrl = ""
         self.__phoneNumber = ""
         self.__hasAlreadyFetchedDetails = False
+        self.__distanceToReachInMeters = 0.0
+        self.__timeToReachInSeconds = 0.0
 
     @property
     def id(self) -> str:
@@ -120,6 +122,22 @@ class Restaurant(GeneralPlace):
     @timetable.setter
     def timetable(self, timetable) -> None:
         self.__timetable = timetable
+
+    @property
+    def distance(self) -> float:
+        return self.__distanceToReachInMeters
+
+    @distance.setter
+    def distance(self, newDistance: float) -> None:
+        self.__distanceToReachInMeters = newDistance
+
+    @property
+    def reachtime(self) -> float:
+        return self.__timeToReachInSeconds
+
+    @reachtime.setter
+    def reachtime(self, newReachTime: float) -> None:
+        self.__timeToReachInSeconds = newReachTime
 
     def clone(self):
         """Clones the restaurant object.

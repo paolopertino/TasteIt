@@ -205,7 +205,7 @@
 	
 	\subsection{/settings - Modifica dei filtri sul raggio di ricerca}
 	\paragraph{}
-	Attraverso il comando \textit{/settings} è possibile modificare i parametri di default relativi alla massima distanza percorribile sia a piedi sia in macchina (di default a piedi 1.5 km e in macchina 20 km).\\
+	Attraverso il comando \textit{/settings} è possibile modificare i parametri di default relativi alla massima distanza percorribile sia a piedi sia in macchina (di default a piedi 0.5 km e in macchina 10 km).\\
 	Tali nuove informazioni saranno salvate nel database in modo tale da essere utilizzate come raggio quando si effettua un'operazione di ricerca di un ristorante.
 	\newpage
 	\begin{figure}[h]
@@ -319,6 +319,23 @@
 	\subsection{/preferiti - Lista dei preferiti}
 	\paragraph{}
 	Utilizzando il comando \textit{/preferiti} inizia la conversazione che gestisce la visualizzazione delle proprie liste dei preferiti, se presenti, e del loro aggiornamento (cancellazione della lista e rimozione di ristoranti).
+	
+	\begin{figure}[!htb]
+		\begin{minipage}{0.45\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{preferitiCommand_listOfLists.png}
+			\caption{Le tue liste}
+		\end{minipage}\hfill
+		\begin{minipage}{0.45\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{preferitiCommand_listContent.png}
+			\caption{Contenuto della lista}
+		\end{minipage}
+	\end{figure}
+
+	\paragraph{}
+	Come è possibile notare, vengono direttamente mostrate le informazioni dettagliate dei ristoranti presenti nelle liste preferiti. I comandi fruibili attraverso i bottoni, inoltre, sono i medesimi visti per la fase di ricerca e comprendono quindi la visualizzazione del sito web, indicazioni su \textit{Google Maps} e recensioni del locale.\\
+	Nei gruppi è inoltre possibile avviare un sondaggio con i ristoranti contenuti nella lista che si sta visualizzando.
 	
 	
 	\newpage

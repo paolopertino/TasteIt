@@ -46,6 +46,7 @@ class Service(Enum):
     TELEGRAM = auto()
     GOOGLE_PLACES = auto()
     TELEGRAM_DEVELOPER_CHAT_ID = auto()
+    MAPBOX = auto()
 
 
 class ApiKey:

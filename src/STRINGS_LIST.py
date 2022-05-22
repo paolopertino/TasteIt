@@ -101,8 +101,8 @@ GENERAL_STRINGS = {
         """,
     },
     "GENERAL_RestaurantInfoDisplay": {
-        "it": """🍣 <b>TasteIt - Risultati</b> 🍝\n Ristorante - <b>{}</b>\n{}\n{} recensioni totali.""",
-        "en": """🍣 <b>TasteIt - Results</b> 🍝\n Restaurant - <b>{}</b>\n{}\n{} total reviews.""",
+        "it": """🍣 <b>TasteIt - Risultati</b> 🍝\n Ristorante - <b>{}</b>\n{}\n🕙 - {} minuti\n{}\n{} recensioni totali.""",
+        "en": """🍣 <b>TasteIt - Results</b> 🍝\n Restaurant - <b>{}</b>\n{}\n🕙 - {} minutes\n{}\n{} total reviews.""",
     },
     "GENERAL_MoreInfos": {
         "it": """💡 Maggiori informazioni 💡""",
@@ -204,6 +204,10 @@ GENERAL_STRINGS = {
         "en": """
                ✅ The new parameter has been successfully saved.
         """,
+    },
+    "GENERAL_Meters": {
+        "it": """ metri""",
+        "en": """ meters""",
     },
 }
 

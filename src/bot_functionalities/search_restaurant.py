@@ -33,6 +33,7 @@ from string import capwords
 from json import loads
 from sys import path
 from geopy.distance import geodesic
+from time import strftime, gmtime
 
 from data import (
     fetchCategories,
@@ -430,9 +431,8 @@ def searchRestaurant(update: Update, context: CallbackContext) -> int:
         context.chat_data.update({"search_message_id": newMessage.message_id})
 
         # Since no restaurant matched with the given specs, then we reset them to their default value.
-        currentSearchInfo: ResearchInfo = context.chat_data.get("research_info")
-        currentSearchInfo.opennow = False
-        currentSearchInfo.cost = 3
+        searchInfo.opennow = False
+        searchInfo.cost = 3
 
         return showRecapMessage(update, context)
     except GoogleCriticalErrorException:
@@ -447,6 +447,10 @@ def searchRestaurant(update: Update, context: CallbackContext) -> int:
     else:
         # If everything has gone fine, a restaurants' list is compiled and stored in chat_data
         fetchedRestaurants = RestaurantList()
+        filteredRestaurants = RestaurantList()
+        maxRadius = fetchResearchRadius(
+            update.effective_chat.id, searchInfo.walkingdistance
+        )[0]
         # outOfRangeRestaurants: list = []
         for result in placesFound.get("results"):
             if (
@@ -457,53 +461,35 @@ def searchRestaurant(update: Update, context: CallbackContext) -> int:
                     ),
                     (searchInfo.latitude, searchInfo.longitude),
                 ).meters
-                <= fetchResearchRadius(
-                    update.effective_chat.id, searchInfo.walkingdistance
-                )[0]
+                <= maxRadius
             ):
-                fetchedRestaurants.add(
-                    Restaurant(
-                        result.get("name"),
-                        result.get("geometry").get("location").get("lat"),
-                        result.get("geometry").get("location").get("lng"),
-                        result.get("place_id"),
-                        result.get("price_level"),
-                        result.get("rating"),
-                        result.get("user_ratings_total"),
-                    )
-                )
-        #     else:
-        #         outOfRangeRestaurants.append(
-        #             Restaurant(
-        #                 result.get("name"),
-        #                 result.get("geometry").get("location").get("lat"),
-        #                 result.get("geometry").get("location").get("lng"),
-        #                 result.get("place_id"),
-        #                 result.get("price_level"),
-        #                 result.get("rating"),
-        #                 result.get("user_ratings_total"),
-        #             )
-        #         )
-        # # Adding the out of range restaurants in the back of the list.
-        # for outOfRangeRestaurant in outOfRangeRestaurants:
-        #     fetchedRestaurants.add(outOfRangeRestaurant)
-
-        # If the list become empty after the distance filtering we populate it with the other values.
-        if fetchedRestaurants.size == 0:
-            for result in placesFound.get("results"):
-                fetchedRestaurants.add(
-                    Restaurant(
-                        result.get("name"),
-                        result.get("geometry").get("location").get("lat"),
-                        result.get("geometry").get("location").get("lng"),
-                        result.get("place_id"),
-                        result.get("price_level"),
-                        result.get("rating"),
-                        result.get("user_ratings_total"),
-                    )
+                restaurant = Restaurant(
+                    result.get("name"),
+                    result.get("geometry").get("location").get("lat"),
+                    result.get("geometry").get("location").get("lng"),
+                    result.get("place_id"),
+                    result.get("price_level"),
+                    result.get("rating"),
+                    result.get("user_ratings_total"),
                 )
 
-        context.chat_data.update({"restaurants_list": fetchedRestaurants})
+                # Than we measure the walking or driving distance between the starting position and the destination
+                (
+                    restaurant.distance,
+                    restaurant.reachtime,
+                ) = __compileRestaurantReachingParameters(
+                    searchInfo.latitude,
+                    searchInfo.longitude,
+                    restaurant.latitude,
+                    restaurant.longitude,
+                    "mapbox/walking"
+                    if searchInfo.walkingdistance
+                    else "mapbox/driving",
+                )
+            if restaurant.distance <= maxRadius:
+                filteredRestaurants.add(restaurant)
+
+        context.chat_data.update({"restaurants_list": filteredRestaurants})
 
         return showCurrentRestaurant(update, context)
 
@@ -564,7 +550,6 @@ def showCurrentRestaurant(update: Update, context: CallbackContext) -> int:
         ]
     )
     reply_markup = InlineKeyboardMarkup(keyboard)
-
     # Printing the infos of the current element
     context.bot.edit_message_text(
         chat_id=update.effective_chat.id,
@@ -573,6 +558,29 @@ def showCurrentRestaurant(update: Update, context: CallbackContext) -> int:
             "GENERAL_RestaurantInfoDisplay",
             context.chat_data.get("lang"),
             listOfRestaurants.current.name,
+            (
+                (
+                    "🚶‍♂️ - "
+                    if (context.chat_data.get("research_info").walkingdistance)
+                    else "🚙 - "
+                )
+                + (
+                    (
+                        (
+                            str(round(listOfRestaurants.current.distance / 1000, 2))
+                            + " km"
+                        )
+                        if listOfRestaurants.current.distance >= 1000
+                        else str(round(listOfRestaurants.current.distance))
+                        + getString("GENERAL_Meters", context.chat_data.get("lang"))
+                    )
+                    if listOfRestaurants.current.distance < 100000
+                    else "N.A."
+                )
+            ),
+            strftime("%M:%S", gmtime(listOfRestaurants.current.reachtime))
+            # str(round(listOfRestaurants.current.reachtime / 60, 2))
+            if listOfRestaurants.current.reachtime < 100000 else "N.A.",
             "⭐️" * round(listOfRestaurants.current.rating)
             + " <b><i>{}</i></b>/5".format(str(listOfRestaurants.current.rating)),
             "<i>{}</i>".format(str(listOfRestaurants.current.ratingsnumber)),
@@ -1084,4 +1092,29 @@ def __fetchDetailedInfosOfRestaurant(restaurant: Restaurant, lang: str) -> None:
     else:
         raise GoogleCriticalErrorException(
             "Google critical error; check the google key status."
+        )
+
+
+def __compileRestaurantReachingParameters(
+    latOrigin: float,
+    longOrigin: float,
+    latDest: float,
+    longDest: float,
+    movementType: str,
+) -> tuple:
+    # http://127.0.0.1:5000/route/v1/{movementType}/{longDest},{latOrigin};{longDest},{latDest}?overview=false
+    key = utils.ApiKey(utils.Service.MAPBOX).value
+    OSRMResponse = get(
+        f"https://api.mapbox.com/directions/v5/{movementType}/{longOrigin},{latOrigin};{longDest},{latDest}?access_token={key}"
+    )
+    OSRMResponse.raise_for_status()
+    OSRMResponse = loads(OSRMResponse.text)
+
+    if OSRMResponse.get("code") != "Ok":
+        return (100000, 100000)
+    else:
+        print(movementType)
+        return (
+            OSRMResponse.get("routes")[0].get("distance"),
+            OSRMResponse.get("routes")[0].get("duration"),
         )
