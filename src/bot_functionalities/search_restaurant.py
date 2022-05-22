@@ -486,8 +486,8 @@ def searchRestaurant(update: Update, context: CallbackContext) -> int:
                     if searchInfo.walkingdistance
                     else "mapbox/driving",
                 )
-            if restaurant.distance <= maxRadius:
-                filteredRestaurants.add(restaurant)
+                if restaurant.distance <= maxRadius:
+                    filteredRestaurants.add(restaurant)
 
         context.chat_data.update({"restaurants_list": filteredRestaurants})
 

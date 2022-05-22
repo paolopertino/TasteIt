@@ -76,20 +76,20 @@
 	
 	\section{Introduzione}
 	\paragraph{}
-	TasteIt è un bot Telegram che si propone di aiutare gli utenti a effettuare una ricerca del ristorante in cui consumare un pasto, in base alle loro esigenze in termini di ciò che vogliono consumare, di orario e di prezzo. La ricerca può aver inizio a partire dalla propria posizione, oppure dal nome di una località, piazza o via di interesse.\\
+	TasteIt è un bot Telegram che si propone di aiutare gli utenti a effettuare una ricerca del ristorante in cui consumare un pasto, in base alle loro esigenze in termini di ciò che vogliono mangiare, orario, prezzo e distanza. La ricerca può aver inizio a partire dalla propria posizione, oppure dal nome di una località, piazza o via di interesse.\\
 	Infine, la semplice operazione di ricerca è stata corredata dalla possibilità di creare liste dei preferiti, interattività della conversazione nei gruppi con possibilità di creare sondaggi ed è inoltre fornito un supporto per diverse lingue (attualmente sono implementate solo Italiano e Inglese).
 	
 	\subsection{Obiettivi}
 	\paragraph{}
 	Come anticipato nel paragrafo precedente, TasteIt si propone di essere una valida interfaccia per i servizi offerti da Google Maps in termini di ricerca di ristoranti. Per questo motivo, di seguito elenchiamo i principali obiettivi preposti:
 	\begin{itemize}
-		\item \textbf{Ricerca Personalizzata}
+		\item \textbf{Ricerca personalizzata}
 		
 		Offrire una ricerca personalizzata del ristornate in cui consumare il proprio pasto, in termini di cibo desiderato, orario di apertura, fascia di prezzo, posizione iniziale di ricerca e preferenze relative alla distanza massima che si vuole percorrere (2 filtri di default per indicare la volontà di sopraggiungere al locale a piedi o in macchina).
 		
 		\item \textbf{Informazioni del ristorante}
 		
-		Fornire inizialmente delle informazioni riassuntive che permettano all'utente di scegliere un ristorante (che possiamo assumere essere valutazione complessiva e numero di recensioni) e successivamente, sotto richiesta dello stesso, mostrare informazioni più dettagliate, comprendenti anche indirizzo, numero di telefono, sito web (se presente) e recensioni degli utenti.
+		Fornire inizialmente delle informazioni riassuntive (che possiamo assumere essere valutazione complessiva e numero di recensioni) che permettano all'utente di scegliere un ristorante e successivamente, sotto richiesta dello stesso, mostrare informazioni più dettagliate, comprendenti anche indirizzo, numero di telefono, sito web (se presente) e recensioni degli utenti.
 		
 		\item \textbf{Gestione preferiti}
 		
@@ -156,21 +156,29 @@
 	
 	\subsubsection{Configurazione Google}
 	\paragraph{}
-	Infine, siccome il funzionamento del bot è relegato all'utilizzo dei servizi offerti da Google, attraverso le \textit{Places API}, è necessario registrare un account su \textit{Google Cloud Services} e fare richiesta per l'abilitazione di una key per le suddette API \cite{places_api_key_registration}.
+	Dal momento che il funzionamento del bot è relegato all'utilizzo dei servizi offerti da Google, attraverso le \textit{Places API}, è necessario registrare un account su \textit{Google Cloud Services} e fare richiesta per l'abilitazione di una key per le suddette API \cite{places_api_key_registration}.
 	Una volta ottenuta le chiave, inserirla all'interno del file \textit{.env} con il formato che segue:
 	\begin{minted}{bash}
 		GOOGLE_PLACES_KEY=la_tua_google_api_key
 	\end{minted}
+	
+	\subsubsection{Configurazione Mapbox}
+	Infine, per usufruire delle complete funzionalità è necessario attivare un account Mapbox\cite{mapbox_api} e generare un'ulteriore API Key per tale servizio.\\
+	\begin{minted}{bash}
+		MAPBOX_KEY=la_tua_mapbox_api_key
+	\end{minted}
+	In alternativa è possibile installare sulla propria macchina un server OSRM \cite{osrm} che gestisca la parte di backend per le informazioni sul percorso da compiere.
 	\paragraph{}
 	Terminato questo passaggio, il bot è pronto per essere avviato. Digitare dunque il comando:
 	\begin{minted}{bash}
 		$ py ./main.py
 	\end{minted}
 	per avviare l'applicativo.
+	
+	\newpage
 	\subsubsection{Permessi per i gruppi}
 	\paragraph{}
 	Se si vuole aggiungere TasteIt ad un gruppo, assicurarsi di fornirgli i seguenti permessi da amministratore:
-	\newpage
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=1.1]{adminPermissions.png}
@@ -448,6 +456,7 @@
 		\item \emph{Visual Studio Code} - Principale IDE utilizzato.
 		\item \emph{python-telegram-bot} - Wrapper python usato per interfacciarsi con le API di Telegram.
 		\item \emph{Places API} - Google Maps API; gestiscono l'operazione di ricerca dei ristoranti.
+		\item \emph{Mapbox} - Informazioni riguardo al tragitto da percorrere per giungere a destinazione.
 		\item \emph{SQLite3} - modulo per interagire con le API dell'omonima libreria SQLite, utilizzata per creare e gestire databases in locale.
 		\item \emph{Raspberry PI 4} - Hosting del bot e gestione del database.
 		\item \emph{AstahUML} - Creazione di diagrammi UML.
@@ -465,6 +474,12 @@
 		
 		\bibitem{places_api_key_registration}
 		\href{https://developers.google.com/maps/documentation/places/web-service/get-api-key}{Google Cloud Platform - Places API Key}
+		
+		\bibitem{mapbox_api}
+		\href{https://www.mapbox.com/}{Mapbox Website}
+		
+		\bibitem{osrm}
+		\href{https://github.com/Project-OSRM/osrm-backend}{OSRM-backend}
 		
 		\bibitem{circularDoublyLinkedList}
 		\href{https://pythonwife.com/circular-doubly-linked-list-in-python/#:~:text=A%20circular%20doubly%20linked%20list,tail%20node%20and%20vice%20versa.}{Circular Doubly Linked List}
