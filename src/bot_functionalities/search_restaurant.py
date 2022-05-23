@@ -489,9 +489,35 @@ def searchRestaurant(update: Update, context: CallbackContext) -> int:
                 if restaurant.distance <= maxRadius:
                     filteredRestaurants.add(restaurant)
 
-        context.chat_data.update({"restaurants_list": filteredRestaurants})
+        if filteredRestaurants.size == 0:
+            # Thrown when no restaurants were found with the specfied research informations.
+            # In this case the recap will pop back.
+            context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=getString(
+                    "ERROR_NoRestaurantsFound", context.chat_data.get("lang")
+                ),
+            )
 
-        return showCurrentRestaurant(update, context)
+            context.bot.delete_message(
+                chat_id=update.effective_chat.id,
+                message_id=context.chat_data.get("search_message_id"),
+            )
+            # Creating a new "empty" message. It will be immediately overridden by showRecapMessage method.
+            newMessage = context.bot.send_message(
+                chat_id=update.effective_chat.id, text="_"
+            )
+            context.chat_data.update({"search_message_id": newMessage.message_id})
+
+            # Since no restaurant matched with the given specs, then we reset them to their default value.
+            searchInfo.opennow = False
+            searchInfo.cost = 3
+
+            return showRecapMessage(update, context)
+        else:
+            context.chat_data.update({"restaurants_list": filteredRestaurants})
+
+            return showCurrentRestaurant(update, context)
 
 
 def showCurrentRestaurant(update: Update, context: CallbackContext) -> int:
@@ -1113,7 +1139,6 @@ def __compileRestaurantReachingParameters(
     if OSRMResponse.get("code") != "Ok":
         return (100000, 100000)
     else:
-        print(movementType)
         return (
             OSRMResponse.get("routes")[0].get("distance"),
             OSRMResponse.get("routes")[0].get("duration"),
