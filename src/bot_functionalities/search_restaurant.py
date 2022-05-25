@@ -1035,13 +1035,12 @@ def __fetchRestaurant(chatId: str, researchInfo: ResearchInfo, lang: str):
 
     if researchInfo.opennow:
         googleResult = get(
-            f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&opennow&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&radius={radiusInMeters}&rankby=prominence&type=restaurant&key={googleKey}"
+            f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&opennow&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&radius={radiusInMeters}&type=restaurant&key={googleKey}"
         )
     else:
         googleResult = get(
-            f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&radius={radiusInMeters}&rankby=prominence&type=restaurant&key={googleKey}"
+            f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword={researchInfo.food}&maxprice={researchInfo.cost-1}&language={lang}&location={researchInfo.latitude}%2C{researchInfo.longitude}&radius={radiusInMeters}&type=restaurant&key={googleKey}"
         )
-
     googleResult.raise_for_status()
 
     # Parsing google response (json) to dictionary
