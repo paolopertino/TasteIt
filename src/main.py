@@ -37,6 +37,7 @@ import traceback
 import html
 import json
 import logging
+import os
 
 from utils.api_key import ApiKey, Service
 from utils.conversation_utils import notAvailableOption, cancelConversation
@@ -105,7 +106,9 @@ from bot_functionalities import (
 )
 from data import setupTables
 
-_DEVMODE = False
+PORT = int(os.environ.get('PORT', 5000))
+
+_DEVMODE = True
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
@@ -149,7 +152,6 @@ def error_handler(update: object, context: CallbackContext) -> None:
         text=message,
         parse_mode=ParseMode.HTML,
     )
-
 
 def main():
     telegramKey = ApiKey(service=Service.TELEGRAM, devMode=_DEVMODE).value
@@ -404,7 +406,6 @@ def main():
 
     updater.start_polling()
     updater.idle()
-
 
 if __name__ == "__main__":
     main()
