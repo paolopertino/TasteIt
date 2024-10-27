@@ -54,15 +54,7 @@
 - [Getting Started](#toolbox-getting-started)
   * [Prerequisites](#bangbang-prerequisites)
   * [Installation](#gear-installation)
-  * [Running Tests](#test_tube-running-tests)
-  * [Run Locally](#running-run-locally)
-  * [Deployment](#triangular_flag_on_post-deployment)
-- [Usage](#eyes-usage)
-- [Roadmap](#compass-roadmap)
-- [Contributing](#wave-contributing)
-  * [Code of Conduct](#scroll-code-of-conduct)
-- [FAQ](#grey_question-faq)
-- [License](#warning-license)
+  * [Usage](#eyes-usage)
 - [Contact](#handshake-contact)
 - [Acknowledgements](#gem-acknowledgements)
 
@@ -159,33 +151,22 @@ You can deploy this project on your machine by following these steps:
 
 <!-- Usage -->
 ## :eyes: Usage
-Work in progress...
-<!-- Use this space to tell a little more about your project and how it can be used. Show additional screenshots, code samples, demos or link to other resources.
+The chatbot can be used to look for places to have a meal. It has been developed to be used both in private and group chats.
 
+|    |    |    |
+|:--:|:--:|:--:|
+| <img src="documentation/Report/cercaCommand_startingPoseByName.png"> | <img src="documentation/Report/cercaCommand_foodChoice.png"> | <img src="documentation/Report/cercaCommand_recapMsg.png">
 
-```javascript
-import Component from 'my-project'
+The chatbot allows to look for restaurants and respective information around the user current position or near a specified point of interest possibly filtering them for price range, distance from the user and how the user will reach the restaurant (by car vs walking for example). The information retrieved and displayed include the distance from the user/point of interest, the phone number, address, price range, and possibly reviews. 
+|    |    |
+|:--:|:--:|
+| <img src="documentation/Report/cercaCommand_detailedInfo.png"> |<img src="documentation/Report/cercaCommand_viewReviews.png"> |
 
-function App() {
-  return <Component />
-}
-```
--->
+It is possible to create lists of preferences, keep track of the favorite restaurants and so subsequently retrieve easily their information.
 
-<!-- FAQ -->
-## :grey_question: FAQ
-Work in progress...
-<!--
-
-- Question 1
-
-  + Answer 1
-
-- Question 2
-
-  + Answer 2
--->
-<!-- License -->
+|    |    |
+|:--:|:--:|
+| <img src="documentation/Report/cercaCommand_addToFavorites.png"> |<img src="documentation/Report/preferitiCommand_listContent.png"> | 
 
 <!-- Contact -->
 ## :handshake: Contact
